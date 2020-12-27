@@ -96,7 +96,7 @@ app.delete('/categoria/:id', async (req, res)=>{
 
 		let respuesta = await qy(query, [req.params.id]);
 
-		if(respuesta.length > 0){
+		if (respuesta.length > 0) {
 			throw new Error("Esta categoria tiene libros asociados, no se puede eliminar");
 		}
 
@@ -104,11 +104,35 @@ app.delete('/categoria/:id', async (req, res)=>{
 
 		respuesta = await qy(query, [req.params.id]);
 
-		res.send({"respuesta": 'Se borro correctamente'});
+		res.send({
+			"respuesta": 'Se borro correctamente'
+		});
 
-	}catch(e){
+	} catch (e) {
 		console.error(e.message);
-		res.status(413).send({"Error":e.message});
+		res.status(413).send({
+			"Error": e.message
+		});
 	}
 });
 
+
+/* GET '/categoria/:id' retorna: status 200 y {id: numerico, nombre:string} - 
+status: 413, {mensaje: <descripcion del error>} que puede 
+ser: "error inesperado", "categoria no encontrada" */
+
+app.get('/categoria/:id', async (req, res) => { //Se espera la respuesta antes de seguir con el programa con id req.params
+	try {
+		const query = 'SELECT * FROM genero WHERE id_categoria=?' //Consulta MySQL
+		const respuesta = await qy(query, [req.params.id]); // async de la consulta y array de remplazo con los comodines en orden
+		res.send({respuesta //se manda JSON 
+		});
+
+	} catch (e) {
+		// statements
+		console.log(e.message);
+		res.status(413).send({
+			'error': 'Error inesperado'
+		});
+	}
+});
