@@ -10,8 +10,8 @@ const app = express();
 
 /* Llamada de función especifica del paquete---------------------*/
 
-app.use(express.json()); //permite el mapeo de la peticion json a object js
-app.use(express.static('public')); // permite uso de la carpeta
+app.use(express.json()); //permite el mapeo de la peticion json a object js 
+app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
 
 /* Conexion con MySql ---------------------------------------*/
 
@@ -74,7 +74,7 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 		query = 'INSERT INTO genero (nombre_categoria) VALUE (?)';
 		respuesta = await qy(query, [nombre]);
 
-		res.send({
+		res.status(200).send({
 			'Nombre': nombre,
 			'Id': respuesta.insertId
 		});
@@ -107,7 +107,7 @@ app.delete('/categoria/:id', async (req, res) => {
 
 		respuesta = await qy(query, [req.params.id]);
 
-		res.send({
+		res.status(200).send({
 			"respuesta": 'Se borro correctamente'
 		});
 
@@ -128,7 +128,7 @@ app.get('/categoria/:id', async (req, res) => { //Se espera la respuesta antes d
 	try {
 		const query = 'SELECT * FROM genero WHERE id_categoria=?' //Consulta MySQL
 		const respuesta = await qy(query, [req.params.id]); // async de la consulta y array de remplazo con los comodines en orden
-		res.send({
+		res.status(200).send({
 			respuesta //se manda JSON 
 		});
 
@@ -150,7 +150,7 @@ app.get('/categoria', async (req, res) => {  //Se espera la respuesta antes de s
 		const respuesta = await qy(query); 
 		console.log(respuesta);
 		// async de la consulta
-		res.send({
+		res.status(200).send({
 			'respuesta': respuesta           //se manda JSON 
 		});
 		//conexion.query(query);
