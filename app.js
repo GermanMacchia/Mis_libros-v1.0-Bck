@@ -46,15 +46,15 @@ app.listen(port, () => {
 // Desarrollo de la lógica en la API -----------------------------------------------
 
 
-	/* POST para guardar una categoria (GENERO) nueva. 
+/* POST para guardar una categoria (GENERO) nueva. 
 
 	Categoria recibe: {nombre:sting} retorna status 200
 	{id: numerico, nombre:string} - status 413, {mensaje: <descripcion del error> que puede ser:
 	"faltan datos", "ese nombre de categoria ya existe", "error inesperado" **/
 
-app.post('/categoria', async (req, res) => {  //Se espera la respuesta antes de seguir con el programa 
+app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de seguir con el programa 
 	try {
-		if(!req.body.nombre){       //Validación de envio correcto de informacion
+		if (!req.body.nombre) { //Validación de envio correcto de informacion
 			throw new Error('Falta enviar el nombre'); //Si no hay JSON en el body tira error
 		}
 
@@ -63,8 +63,8 @@ app.post('/categoria', async (req, res) => {  //Se espera la respuesta antes de 
 		//Verifico que no exista previamente esa categoria
 		let query = 'SELECT id_categoria FROM genero WHERE nombre_categoria = ?';
 		let respuesta = await qy(query, [nombre]);
-		
-		if (respuesta.length > 0){ //si no me arroja ningun resultado entonces el query esta vacio
+
+		if (respuesta.length > 0) { //si no me arroja ningun resultado entonces el query esta vacio
 			throw new Error('Ese nombre de genero ya existe')
 		}
 
@@ -81,7 +81,8 @@ app.post('/categoria', async (req, res) => {  //Se espera la respuesta antes de 
 		// statements
 		console.log(e.message);
 		res.status(413).send({
-			'error': e.message});
+			'error': e.message
+		});
 	}
 });
 
@@ -90,8 +91,8 @@ app.post('/categoria', async (req, res) => {  //Se espera la respuesta antes de 
 	"categoria con libros asociados, no se puede eliminar", "no existe la categoria 
 	indicada" */
 
-app.delete('/categoria/:id', async (req, res)=>{
-	try{
+app.delete('/categoria/:id', async (req, res) => {
+	try {
 		let query = 'SELECT * FROM libros WHERE id_categoria = ?'; //chequeo en 'libros' para ver si la categoria esta en uso
 
 		let respuesta = await qy(query, [req.params.id]);
@@ -117,15 +118,16 @@ app.delete('/categoria/:id', async (req, res)=>{
 });
 
 
-/* GET '/categoria/:id' retorna: status 200 y {id: numerico, nombre:string} - 
-status: 413, {mensaje: <descripcion del error>} que puede 
-ser: "error inesperado", "categoria no encontrada" */
+	/* GET '/categoria/:id' retorna: status 200 y {id: numerico, nombre:string} - 
+	status: 413, {mensaje: <descripcion del error>} que puede 
+	ser: "error inesperado", "categoria no encontrada" */
 
 app.get('/categoria/:id', async (req, res) => { //Se espera la respuesta antes de seguir con el programa con id req.params
 	try {
 		const query = 'SELECT * FROM genero WHERE id_categoria=?' //Consulta MySQL
 		const respuesta = await qy(query, [req.params.id]); // async de la consulta y array de remplazo con los comodines en orden
-		res.send({respuesta //se manda JSON 
+		res.send({
+			respuesta //se manda JSON 
 		});
 
 	} catch (e) {
@@ -133,6 +135,28 @@ app.get('/categoria/:id', async (req, res) => { //Se espera la respuesta antes d
 		console.log(e.message);
 		res.status(413).send({
 			'error': 'Error inesperado'
+		});
+	}
+});
+
+	/* GET '/categoria' retorna: status 200  y [{id:numerico, nombre:string}]  
+	- status: 413 y [] */
+
+app.get('/categoria', async (req, res) => {  //Se espera la respuesta antes de seguir con el programa
+	try {
+		const query = 'SELECT * FROM genero' //Consulta MySQL
+		const respuesta = await qy(query); 
+		console.log(respuesta);
+		// async de la consulta
+		res.send({
+			'respuesta': respuesta           //se manda JSON 
+		});
+		//conexion.query(query);
+	} catch (e) {
+		// statements
+		console.log(e.message);
+		res.status(413).send({
+			'error': e.message
 		});
 	}
 });
