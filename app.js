@@ -175,36 +175,3 @@ app.get('/categoria', async (req, res) => {  //Se espera la respuesta antes de s
  	status: 413, {mensaje: <descripcion del error>} que puede ser: "faltan 
 	datos", "el email ya se encuentra registrado", "error inesperado" */
 
-app.post('/persona', async (req, res) => { //Se espera la respuesta antes de seguir con el programa 
-	try {
-		if (!req.body.nombre) { //Validación de envio correcto de informacion
-			throw new Error('Falta enviar el nombre'); //Si no hay JSON en el body tira error
-		}
-
-		const nombre = req.body.nombre.toUpperCase(); //Funcion para estandarizarla en mayusculas
-
-		//Verifico que no exista previamente esa categoria
-		let query = 'SELECT id_categoria FROM genero WHERE nombre_categoria = ?';
-		let respuesta = await qy(query, [nombre]);
-
-		if (respuesta.length > 0) { //si no me arroja ningun resultado entonces el query esta vacio
-			throw new Error('Ese nombre de genero ya existe')
-		}
-
-		//Guardo la nueva categoría
-		query = 'INSERT INTO genero (nombre_categoria) VALUE (?)';
-		respuesta = await qy(query, [nombre]);
-
-		res.send({
-			'Nombre': nombre,
-			'Id': respuesta.insertId
-		});
-
-	} catch (e) {
-		// statements
-		console.log(e.message);
-		res.status(413).send({
-			'error': e.message
-		});
-	}
-});
