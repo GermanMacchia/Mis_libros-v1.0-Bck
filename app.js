@@ -52,7 +52,7 @@ app.listen(port, () => {
 	{id: numerico, nombre:string} - status 413, {mensaje: <descripcion del error> que puede ser:
 	"faltan datos", "ese nombre de categoria ya existe", "error inesperado" **/
 
-app.post('/categoria', async (req, res) => {  //Se espera la respuesta antes de seguir con el programa con id params
+app.post('/categoria', async (req, res) => {  //Se espera la respuesta antes de seguir con el programa 
 	try {
 		if(!req.body.nombre){       //Validación de envio correcto de informacion
 			throw new Error('Falta enviar el nombre'); //Si no hay JSON en el body tira error
@@ -84,3 +84,31 @@ app.post('/categoria', async (req, res) => {  //Se espera la respuesta antes de 
 			'error': e.message});
 	}
 });
+
+	/* DELETE '/categoria/:id' retorna: status 200 y {mensaje: "se borro correctamente"} 
+	- status: 413, {mensaje: <descripcion del error>} que puese ser: "error inesperado", 
+	"categoria con libros asociados, no se puede eliminar", "no existe la categoria 
+	indicada" */
+
+app.delete('/categoria/:id', async (req, res)=>{
+	try{
+		let query = 'SELECT * FROM libros WHERE id_categoria = ?'; //chequeo en 'libros' para ver si la categoria esta en uso
+
+		let respuesta = await qy(query, [req.params.id]);
+
+		if(respuesta.length > 0){
+			throw new Error("Esta categoria tiene libros asociados, no se puede eliminar");
+		}
+
+		query = 'DELETE FROM genero WHERE id_categoria = ?';
+
+		respuesta = await qy(query, [req.params.id]);
+
+		res.send({"respuesta": 'Se borro correctamente'});
+
+	}catch(e){
+		console.error(e.message);
+		res.status(413).send({"Error":e.message});
+	}
+});
+
