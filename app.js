@@ -55,7 +55,7 @@ app.listen(port, () => {
 // CATEGORIA --------------------------------------------------------
 
 
-/* Post <<<<<<<<<<<<<<<<<< 
+/* 1 - Post <<<<<<<<<<<<<<<<<< 
 
 Categoria recibe: {nombre:sting} retorna status 200{id: numerico, nombre:string} - 
 status 413, {mensaje: <descripcion del error> que puede ser:
@@ -96,8 +96,51 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 	}
 });
 
+/* 2 - Get CATEGORIA <<<<<<<<<<<<<<<<<<
 
-/* Delete <<<<<<<<<<<<<<<<<<
+'/categoria' retorna: status 200  y [{id:numerico, nombre:string}]  
+- status: 413 y [] */
+
+app.get('/categoria', async (req, res) => {
+	try {
+		const query = 'SELECT * FROM genero';
+		const respuesta = await qy(query);
+
+		res.status(200).send({
+			'respuesta': respuesta // Devuelve JSON 
+		});
+	} catch (e) {
+		console.log(e.message);
+		res.status(413).send({
+			'Error': e.message
+		});
+	}
+});
+
+/* 3 - Get ID <<<<<<<<<<<<<<<<<<
+
+'/categoria/:id' retorna: status 200 y {id: numerico, nombre:string} - 
+status: 413, {mensaje: <descripcion del error>} que puede 
+ser: "error inesperado", "categoria no encontrada" */
+
+app.get('/categoria/:id', async (req, res) => {
+	try {
+		//Consulta MySQL
+		const query = 'SELECT * FROM genero WHERE id_categoria=?' 
+		const respuesta = await qy(query, [req.params.id]); 
+
+		res.status(200).send({
+			respuesta
+		});
+	} catch (e) {
+		console.log(e.message);
+		res.status(413).send({
+			'Error': 'Error inesperado'
+		});
+	}
+});
+
+/* 4 - Delete <<<<<<<<<<<<<<<<<<
 
 '/categoria/:id' retorna: status 200 y {mensaje: "se borro correctamente"} 
 - status: 413, {mensaje: <descripcion del error>} que puese ser: "error inesperado", 
@@ -129,75 +172,9 @@ app.delete('/categoria/:id', async (req, res) => {
 });
 
 
-/* Get ID <<<<<<<<<<<<<<<<<<
-
-'/categoria/:id' retorna: status 200 y {id: numerico, nombre:string} - 
-status: 413, {mensaje: <descripcion del error>} que puede 
-ser: "error inesperado", "categoria no encontrada" */
-
-app.get('/categoria/:id', async (req, res) => {
-	try {
-		//Consulta MySQL
-		const query = 'SELECT * FROM genero WHERE id_categoria=?' 
-		const respuesta = await qy(query, [req.params.id]); 
-
-		res.status(200).send({
-			respuesta
-		});
-	} catch (e) {
-		console.log(e.message);
-		res.status(413).send({
-			'Error': 'Error inesperado'
-		});
-	}
-});
-
-/* Get CATEGORIA <<<<<<<<<<<<<<<<<<
-
-'/categoria' retorna: status 200  y [{id:numerico, nombre:string}]  
-- status: 413 y [] */
-
-app.get('/categoria', async (req, res) => {
-	try {
-		const query = 'SELECT * FROM genero';
-		const respuesta = await qy(query);
-
-		res.status(200).send({
-			'respuesta': respuesta // Devuelve JSON 
-		});
-	} catch (e) {
-		console.log(e.message);
-		res.status(413).send({
-			'Error': e.message
-		});
-	}
-});
-
-
 //PERSONA----------------------------------------------------------
 
-
-/* Get <<<<<<<<<<<<<<<<<< 
-
-'/persona' retorna status 200 y [{id: numerico, nombre: string, apellido: 
-string, alias: string, email; string}] o bien status 413 y [] */
-
-app.get('/persona', async (req, res) => {
-	try {
-		const query = 'SELECT * FROM personas'
-		const respuesta = await qy(query);
-		res.status(200).send({
-			'respuesta': respuesta
-		});
-	} catch (e) {
-		console.log(e.message);
-		res.status(413).send({
-			'Error': e.message
-		});
-	}
-});
-
-/* Post <<<<<<<<<<<<<<<<<<
+/* 5 - Post <<<<<<<<<<<<<<<<<<
 
 '/persona' recibe: {nombre: string, apellido: string, alias: string, 
 email: string} retorna: status: 200, {id: numerico, nombre: string, 
@@ -247,7 +224,55 @@ app.post('/persona', async (req, res) => {
 	}
 });
 
-/* Put ID <<<<<<<<<<<<<<<<<<
+/* 6 - Get <<<<<<<<<<<<<<<<<< 
+
+'/persona' retorna status 200 y [{id: numerico, nombre: string, apellido: 
+string, alias: string, email; string}] o bien status 413 y [] */
+
+app.get('/persona', async (req, res) => {
+	try {
+		const query = 'SELECT * FROM personas'
+		const respuesta = await qy(query);
+		res.status(200).send({
+			'respuesta': respuesta
+		});
+	} catch (e) {
+		console.log(e.message);
+		res.status(413).send({
+			'Error': e.message
+		});
+	}
+});
+
+
+/* 7 - Get ID <<<<<<<<<<<<<<<<<<
+
+'/persona/:id' retorna status 200 y {id: numerico, nombre: string, 
+apellido: string, alias: string, email; string} - status 413,
+ {mensaje: <descripcion del error>} "error inesperado", 
+ "no se encuentra esa persona" */
+
+app.get('/persona/:id', async (req, res) => {
+	try {
+		const query = 'SELECT * FROM personas WHERE id_persona = ?';
+		const respuesta = await qy(query, [req.params.id]);
+
+		if (respuesta.length == 0) {
+			throw new Error('No se encuentra esa persona');
+		}
+
+		res.status(200).send({
+			"respuesta": respuesta
+		});
+	} catch (e) {
+		console.error(e.message);
+		res.status(413).send({
+			"Error": e.message
+		});
+	}
+});
+
+/* 8 - Put ID <<<<<<<<<<<<<<<<<<
 
 '/persona/:id' recibe: {nombre: string, apellido: string, alias: string, 
 email: string} el email no se puede modificar. 
@@ -287,8 +312,7 @@ app.put('/persona/:id', async (req, res) => {
 	}
 }); 
 
-
-/* Delete ID <<<<<<<<<<<<<<<<<<
+/* 9 - Delete ID <<<<<<<<<<<<<<<<<<
 
 '/persona/:id' retorna: 200 y {mensaje: "se borro correctamente"} o 
 bien 413, {mensaje: <descripcion del error>} "error 
@@ -324,7 +348,7 @@ app.delete("/persona/:id", async (req, res) => {
 
 //LIBRO----------------------------------------------------------
 
-/* Post  <<<<<<<<<<<<<<<<<<
+/* 10 - Post  <<<<<<<<<<<<<<<<<<
 
 '/libro' recibe: {nombre:string, descripcion:string, categoria_id:numero, 
 persona_id:numero/null} devuelve 200 y {id: numero, nombre:string, 
@@ -388,7 +412,7 @@ app.post('/libro', async (req, res) => {
 });
 
 
-/* Get <<<<<<<<<<<<<<<<<<
+/* 11 - Get <<<<<<<<<<<<<<<<<<
 
 GET '/libro' devuelve 200 y [{id: numero, nombre:string, descripcion:string, 
 categoria_id:numero, persona_id:numero/null}] o bien 413,
@@ -410,7 +434,7 @@ app.get('/libro', async (req, res) => {
 	}
 });
 
-/* Get ID <<<<<<<<<<<<<<<<<<<
+/* 12 - Get ID <<<<<<<<<<<<<<<<<<<
 
 GET '/libro/:id' devuelve 200 {id: numero, nombre:string, descripcion:string, 
 categoria_id:numero, persona_id:numero/null} y status 413, {mensaje: 
@@ -436,3 +460,35 @@ app.get('/libro/:id', async (req, res) => {
 		});
 	}
 });
+
+/* 13 - Put ID <<<<<<<<<<<<<<<<<<<
+
+'/libro/:id' y {id: numero, nombre:string, descripcion:string, categoria_id:numero,
+ persona_id:numero/null} devuelve status 200 y {id: numero, nombre:string, 
+ descripcion:string, categoria_id:numero, persona_id:numero/null} modificado o 
+ bien status 413, {mensaje: <descripcion del error>} "error inesperado",  
+ "solo se puede modificar la descripcion del libro */
+
+
+/* 14 - Put prestar ID <<<<<<<<<<<<<<<<<<<
+
+'/libro/prestar/:id' y {id:numero, persona_id:numero} devuelve 200 y 
+{mensaje: "se presto correctamente"} o bien status 413, 
+{mensaje: <descripcion del error>} "error inesperado", "el libro ya se encuentra 
+prestado, no se puede prestar hasta que no se devuelva", "no se encontro el libro", 
+"no se encontro la persona a la que se quiere prestar el libro" */
+
+
+/* 15 - Put devolver ID <<<<<<<<<<<<<<<<<<< 
+
+'/libro/devolver/:id' y {} devuelve 200 y {mensaje: "se realizo la devolucion 
+correctamente"} o bien status 413, {mensaje: <descripcion del error>} 
+"error inesperado", "ese libro no estaba prestado!", "ese libro no existe" */
+
+
+/* 16 - Delete ID 
+
+'/libro/:id' devuelve 200 y {mensaje: "se borro correctamente"}  
+o bien status 413, {mensaje: <descripcion del error>} 
+"error inesperado", "no se encuentra ese libro", "ese libro esta prestado no 
+se puede borrar" */
