@@ -67,7 +67,7 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 		let respuesta = await qy(query, [nombre]);
 
 		if (respuesta.length > 0) { //si no me arroja ningun resultado entonces el query esta vacio
-			throw new Error('Ese nombre de genero ya existe')
+			throw new Error('Ese nombre de categoria ya existe')
 		}
 
 		//Guardo la nueva categoría
@@ -167,7 +167,7 @@ app.get('/categoria', async (req, res) => {  //Se espera la respuesta antes de s
 	/* GET '/persona' retorna status 200 y [{id: numerico, nombre: string, apellido: string, alias: string, email; string}] o bien status 
 	413 y [] */
 
-app.get('/personas', async (req, res) => {
+app.get('/persona', async (req, res) => {
 	try {
 		const query = 'SELECT * FROM personas' //Consulta MySQL
 		const respuesta = await qy(query);
@@ -188,7 +188,7 @@ app.get('/personas', async (req, res) => {
  	status: 413, {mensaje: <descripcion del error>} que puede ser: "faltan 
 	datos", "el email ya se encuentra registrado", "error inesperado" */
 
-app.post('/personas', async (req, res) => { //Se espera la respuesta antes de seguir con el programa 
+app.post('/persona', async (req, res) => { //Se espera la respuesta antes de seguir con el programa 
 	try {
 		if (!req.body.email || !req.body.apellido || !req.body.nombre || !req.body.alias) { //Validación de envio correcto de informacion
 			throw new Error('Faltan datos'); //Si no hay JSON en el body tira error
