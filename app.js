@@ -5,6 +5,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const util = require('util');
+const jwt = require('jsonwebtoken');
 
 /* Declaración del paquete express en aplicación-----------------*/
 
@@ -36,17 +37,76 @@ conexion.connect((error) => {
 const qy = util.promisify(conexion.query).bind(conexion);
 
 /* ¿Por qué? Porque Async/await solo puede ubicarse en el lugar de 
-	las promesas, NO SOBRE CALLBACK. Entonces lo que hace es transformar
-	en promesa la callback del pedido de query * /
+	las PROMESAS, NO SOBRE CALLBACK´s. Entonces lo que hace es transformar
+	en promesa la callback del pedido de query */
 
 
-/* Establecer puerto  ---------------------------------*/
+// Establecer puerto  ----------------------------------------
 
-const port = 3000;
+const port = process.env.PORT ? process.env.PORT : 3000;
 app.listen(port, () => {
 	console.log('Aplicación operativa.\nEscuchando el puerto ' + port)
 });
 
+// Login ----------------------------------------------------- 
+
+app.post('/login', (req, res) => {
+
+	if (!req.body.user || !req.body.pass) {
+		res.send({
+			error : 'No mandaste todos los datos'
+		})
+		return;
+	}
+
+	if (req.body.user == 'lore' && req.body.pass == '123') {
+
+		const tokenData = {
+			nombre: 'lala',
+			apellido: 'lele'
+		}
+		// Se utiliza una palabra determinada para codificar el token
+		const token = jwt.sign(tokenData, 'Secret', {
+			expiresIn: 60 * 60 * 24 // en este caso, expira en 24hs
+		})
+
+		res.send({
+			token
+		});
+
+	} else {
+		res.send({
+			error : 'Usuario o clave incorrecta'
+		})
+	}
+});
+
+app.get('/biblioteca', (req, res) => {
+	let token = req.headers['authorization']
+
+	if(!token){
+		console.log('error');
+		return;
+	}
+
+	token = token.replace('Bearer ', '')
+
+	//Verify toma el token y lo decodifica
+	jwt.verify(token, 'Secret', (err, user) => {
+		if(err) {
+			res.status(401).send({
+				error: 'Token invalido'
+			})
+		} else {
+			//Recupera los datos del usuario que fue codificado en el token
+			//En este caso le hacemos un console log para ver los datos del token
+			console.log('esto es user ', user) 
+			res.send({
+				message: '¡Bienvenido a tu libreria!'
+			})
+		}
+	})
+});
 
 // Desarrollo de la lógica en la API ////////////////////////////////
 
@@ -283,7 +343,7 @@ persona" */
 app.put('/persona/:id', async (req, res) => {
 	const id = req.params.id;
 	try {
-		//Declaracion de variables y standarizacion de datos
+		//Declaracion e inicializacion de variables con standarizacion de datos con función uppercase
 		const email = req.body.email_persona.toUpperCase();
 		const apellido = req.body.apellido_persona.toUpperCase();
 		const nombre = req.body.nombre_persona.toUpperCase();
