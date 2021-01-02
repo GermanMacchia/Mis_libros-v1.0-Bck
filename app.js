@@ -652,3 +652,36 @@ correctamente"} o bien status 413, {mensaje: <descripcion del error>}
 o bien status 413, {mensaje: <descripcion del error>} 
 "error inesperado", "no se encuentra ese libro", "ese libro esta prestado no 
 se puede borrar" */
+
+app.delete("/libro/:id", async (req, res) => {
+	try {
+		//chequeo en 'libros' para ver si el libro existe
+		let query = "SELECT * FROM libros WHERE id_libro = ?";
+		let respuesta = await qy(query, [req.params.id]);
+		
+		if (respuesta.length == 0) {
+			throw new Error(
+				"No se encuentra ese libro"
+			);
+		}
+
+		if (respuesta[0].id_persona != null){
+			throw new Error(
+				"Ese libro esta prestado, no se puede borrar"
+			);
+		}
+
+		//Si cumple con todas las condiciones procedo a borrar ID
+		query = "DELETE FROM libros WHERE id_libro = ?";
+		respuesta = await qy(query, [req.params.id]);
+
+		res.status(200).send({
+			respuesta: "Se borro correctamente",
+		});
+	} catch (e) {
+		console.error(e.message);
+		res.status(413).send({
+			error: e.message
+		});
+	}
+});
