@@ -101,7 +101,7 @@ app.post('/login', async (req, res) => {
 
 		// Chequeo si el usuario esta en mi base de datos
 		let query = 'SELECT * from usuarios WHERE nombre_usuario = ?';
-		let respuesta = await qy(query, [req.body.user]);
+		let respuesta = await qy(query, req.body.user);
 
 		if (respuesta.length == 0) { // Si no me arroja ningun resultado entonces el query esta vacio
 			throw new Error('El nombre de usuario no esta registrado')
@@ -113,14 +113,12 @@ app.post('/login', async (req, res) => {
 		query = 'SELECT clave_encriptada FROM usuarios WHERE nombre_usuario = ?';
 		respuesta = await qy(query, req.body.user);
 
-		if (!bcrypt.compareSync(req.body.pass, respuesta[0].clave_encriptada, (err, iguales) => {
-				if (err) {
-					throw new Error('Fallo el Login');
-					return;
-				}
-				next();
-			}));
+		let passverify = bcrypt.compareSync(req.body.pass, respuesta[0].clave_encriptada)
 
+		if(passverify == false){
+			throw new Error('Contraseña incorrecta')
+		};
+		
 		// Paso 3 SESION
 
 		query = 'SELECT  email_usuario FROM usuarios WHERE nombre_usuario = ?';
@@ -150,8 +148,7 @@ app.post('/login', async (req, res) => {
 			error: e.message
 		})
 	}
-}); 
-
+});
 /* Autenticación (Middleware) --------------------------------
 
 const auth = (req, res, next) => {
