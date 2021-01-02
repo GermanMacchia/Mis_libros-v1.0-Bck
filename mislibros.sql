@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-12-2020 a las 23:47:09
--- Versión del servidor: 10.4.13-MariaDB
--- Versión de PHP: 7.4.7
+-- Tiempo de generación: 02-01-2021 a las 03:05:24
+-- Versión del servidor: 10.4.16-MariaDB
+-- Versión de PHP: 7.4.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `my_books`
+-- Base de datos: `mislibros`
 --
 
 -- --------------------------------------------------------
@@ -60,7 +60,8 @@ CREATE TABLE `libros` (
 
 INSERT INTO `libros` (`id_libro`, `nombre_libro`, `descripcion_libro`, `id_categoria`, `id_persona`) VALUES
 (1, 'CONFESSIONS', 'UNA HISTORIA DE VENGANZA', 1, 1),
-(2, 'EL ELFO OSCURO', 'LAS AVENTURAS DEL DROW MAS POPULAR DE LOS REINOS OLVIDADOS', 2, NULL);
+(2, 'EL ELFO OSCURO', 'LAS AVENTURAS DEL DROW MAS POPULAR DE LOS REINOS OLVIDADOS', 2, NULL),
+(3, 'HARRY POTTER', 'Harry se entera que es un mago', 2, NULL);
 
 -- --------------------------------------------------------
 
@@ -83,6 +84,20 @@ CREATE TABLE `personas` (
 INSERT INTO `personas` (`id_persona`, `nombre_persona`, `apellido_persona`, `email_persona`, `alias_persona`) VALUES
 (1, 'JOHN', 'DOE', 'JD@GMAIL.COM', 'NOBODY'),
 (2, 'NATALIA', 'NATALIA', 'NN@GMAIL.COM', 'NO TIENE');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `usuario_id` int(11) NOT NULL,
+  `nombre_usuario` varchar(30) NOT NULL,
+  `clave_encriptada` char(150) NOT NULL,
+  `email_usuario` varchar(30) NOT NULL,
+  `celu_usuario` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Índices para tablas volcadas
@@ -111,6 +126,12 @@ ALTER TABLE `personas`
   ADD UNIQUE KEY `email_persona` (`email_persona`);
 
 --
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`usuario_id`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -118,19 +139,25 @@ ALTER TABLE `personas`
 -- AUTO_INCREMENT de la tabla `genero`
 --
 ALTER TABLE `genero`
-  MODIFY `id_categoria` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_categoria` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `libros`
 --
 ALTER TABLE `libros`
-  MODIFY `id_libro` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_libro` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `personas`
 --
 ALTER TABLE `personas`
   MODIFY `id_persona` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `usuario_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas

@@ -6,20 +6,22 @@ const express = require('express');
 const mysql = require('mysql');
 const util = require('util');
 const jwt = require('jsonwebtoken');
+const unless = require('express-unless');
+const bcrypt = require('bcrypt')
 
 /* Declaración del paquete express en aplicación-----------------*/
 
 const app = express();
 
-/* Llamada de función especifica del paquete---------------------*/
+/* Llamada del middleware especifico del paquete-----------------*/
 
-app.use(express.json()); //permite el mapeo de la peticion json a object js 
+app.use(express.json()); 		   //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
 
 /* Conexion con MySql ---------------------------------------*/
 
 const conexion = mysql.createConnection({
-	host: 'localhost', //por ahora porque trabajos de forma local
+	host: 'localhost', 			   //por ahora porque trabajos de forma local
 	user: 'root',
 	password: '',
 	database: 'mislibros'
@@ -48,23 +50,92 @@ app.listen(port, () => {
 	console.log('Aplicación operativa.\nEscuchando el puerto ' + port)
 });
 
-// Login ----------------------------------------------------- 
 
-app.post('/login', (req, res) => {
 
-	if (!req.body.user || !req.body.pass) {
-		res.send({
-			error : 'No mandaste todos los datos'
-		})
-		return;
+
+// 1. Registración <<<<<<<<<<<<<<<<<< 
+
+app.post('/registro', async (req, res)=>{
+	try{
+		if(!req.body.usuario || !req.body.clave || !req.body.email || !req.body.celu){
+			throw new Error('No enviaste todos los datos necesarios');
+		}
+
+		const email = req.body.email.toUpperCase();
+
+		/* verifico que no exista el nombre de usuario
+		consultando en la base de datos */
+		let query = 'SELECT * from usuarios WHERE nombre_usuario = ?';
+		let respuesta = await qy(query, [req.body.usuario]);
+
+		if (respuesta.length > 0) { // Si no me arroja ningun resultado entonces el query esta vacio
+			throw new Error('Nombre de Usuario existente')
+		}
+		//Si esta todo bien encripto la clave (el bcrypt es asincronico)
+		const claveEncriptada = await bcrypt.hash(req.body.clave, 10);
+
+		//Guardar el usuario con la clave encriptada
+
+		query = 'INSERT INTO usuarios (nombre_usuario, clave_encriptada, email_usuario, celu_usuario) VALUE (?,?,?,?)';
+		respuesta = await qy(query, [req.body.usuario, claveEncriptada, email, req.body.celu]);
+
+		res.send({message: "Se registro correctamente"});
 	}
+	catch(e){
+		res.status(414).send({message: e.nessage});
+	}
+});
 
-	if (req.body.user == 'lore' && req.body.pass == '123') {
+// 2. Login        <<<<<<<<<<<<<<<<<< 
+
+app.post('/login', async (req, res) => {
+	try {
+		if (!req.body.user || !req.body.pass) {
+			res.send({
+				error: 'No mandaste todos los datos'
+			})
+			return;
+		}
+
+		// Paso 1 ENCUENTRO EL USUARIO EN LA BASE DE DATOS
+
+		// Chequeo si el usuario esta en mi base de datos
+		let query = 'SELECT * from usuarios WHERE nombre_usuario = ?';
+		let respuesta = await qy(query, [req.body.user]);
+
+		if (respuesta.length == 0) { // Si no me arroja ningun resultado entonces el query esta vacio
+			throw new Error('El nombre de usuario no esta registrado')
+		}
+
+		// Paso 2 VERIFICO LA CLAVE
+
+		// Consulto la clave encriptada de la base de datos
+		query = 'SELECT clave_encriptada FROM usuarios WHERE nombre_usuario = ?';
+		respuesta = await qy(query, req.body.user);
+
+		if (!bcrypt.compareSync(req.body.pass, respuesta[0].clave_encriptada, (err, iguales) => {
+				if (err) {
+					throw new Error('Fallo el Login');
+					return;
+				}
+				next();
+			}));
+
+		// Paso 3 SESION
+
+		query = 'SELECT  email_usuario FROM usuarios WHERE nombre_usuario = ?';
+		let email = await qy(query, req.body.user);
+
+		query = 'SELECT usuario_id  FROM usuarios WHERE nombre_usuario = ?';
+		let id = await qy(query, req.body.user);
+
 
 		const tokenData = {
-			nombre: 'lala',
-			apellido: 'lele'
+			nombre: req.body.user,
+			email: email,
+			user_id: id
 		}
+
 		// Se utiliza una palabra determinada para codificar el token
 		const token = jwt.sign(tokenData, 'Secret', {
 			expiresIn: 60 * 60 * 24 // en este caso, expira en 24hs
@@ -73,13 +144,45 @@ app.post('/login', (req, res) => {
 		res.send({
 			token
 		});
-
-	} else {
-		res.send({
-			error : 'Usuario o clave incorrecta'
+	} catch (e) {
+		console.log(e.message);
+		res.status(413).send({
+			error: e.message
 		})
 	}
-});
+}); 
+
+/* Autenticación (Middleware) --------------------------------
+
+const auth = (req, res, next) => {
+	try {
+		let token = req.headers['authorization']
+
+		if (!token) {
+			console.log('error');
+			return;
+		}
+
+		token = token.replace('Bearer ', '')
+
+		//Verify toma el token  y lo decodifica
+		jwt.verify(token, 'Secret', (err, user) => {
+			if (err) {
+				throw new Error('Token Invalido');
+			}
+		});
+
+		next();
+
+	} catch (e) {
+		console.log(e.message);
+		res.status(413).send({
+			error: e.message
+		});
+	};
+}
+
+app.use(auth()); */
 
 app.get('/biblioteca', (req, res) => {
 	let token = req.headers['authorization']
@@ -108,8 +211,8 @@ app.get('/biblioteca', (req, res) => {
 	})
 });
 
-// Desarrollo de la lógica en la API ////////////////////////////////
 
+// Desarrollo de la lógica en la API ////////////////////////////////
 
 
 // CATEGORIA --------------------------------------------------------
@@ -145,13 +248,13 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 		respuesta = await qy(query, [nombre]);
 
 		res.status(200).send({
-			'Nombre': nombre,
-			'Id': respuesta.insertId
+			Nombre: nombre,
+			Id: respuesta.insertId
 		});
 	} catch (e) {
 		console.log(e.message);
 		res.status(413).send({
-			'Error': e.message
+			error: e.message
 		});
 	}
 });
@@ -167,12 +270,12 @@ app.get('/categoria', async (req, res) => {
 		const respuesta = await qy(query);
 
 		res.status(200).send({
-			'respuesta': respuesta // Devuelve JSON 
+			respuesta: respuesta // Devuelve JSON 
 		});
 	} catch (e) {
 		console.log(e.message);
 		res.status(413).send({
-			'Error': e.message
+			error: e.message
 		});
 	}
 });
@@ -195,7 +298,7 @@ app.get('/categoria/:id', async (req, res) => {
 	} catch (e) {
 		console.log(e.message);
 		res.status(413).send({
-			'Error': 'Error inesperado'
+			error: 'Error inesperado'
 		});
 	}
 });
@@ -221,12 +324,12 @@ app.delete('/categoria/:id', async (req, res) => {
 		respuesta = await qy(query, [req.params.id]);
 
 		res.status(200).send({
-			"respuesta": 'Se borro correctamente'
+			respuesta: 'Se borro correctamente'
 		});
 	} catch (e) {
 		console.error(e.message);
 		res.status(413).send({
-			"Error": e.message
+			error: e.message
 		});
 	}
 });
@@ -269,17 +372,17 @@ app.post('/persona', async (req, res) => {
 		respuesta = await qy(query, [nombre, apellido, email, alias]);
 
 		res.status(200).send({
-			"Id": respuesta.insertId,
-			"Nombre": nombre,
-			"Apellido": apellido,
-			"Email": email,
-			"Alias": alias
+			Id: respuesta.insertId,
+			Nombre: nombre,
+			Apellido: apellido,
+			Email: email,
+			Alias: alias
 		});
 	} catch (e) {
 		// statements
 		console.log(e.message);
 		res.status(413).send({
-			'Error': e.message
+			error: e.message
 		});
 	}
 });
@@ -294,12 +397,12 @@ app.get('/persona', async (req, res) => {
 		const query = 'SELECT * FROM personas'
 		const respuesta = await qy(query);
 		res.status(200).send({
-			'respuesta': respuesta
+			respuesta: respuesta
 		});
 	} catch (e) {
 		console.log(e.message);
 		res.status(413).send({
-			'Error': e.message
+			error: e.message
 		});
 	}
 });
@@ -322,12 +425,12 @@ app.get('/persona/:id', async (req, res) => {
 		}
 
 		res.status(200).send({
-			"respuesta": respuesta
+			respuesta: respuesta
 		});
 	} catch (e) {
 		console.error(e.message);
 		res.status(413).send({
-			"Error": e.message
+			error: e.message
 		});
 	}
 });
@@ -367,7 +470,7 @@ app.put('/persona/:id', async (req, res) => {
 	} catch (e) {
 		console.log(e.message);
 		res.status(413).send({
-			'Error': e.message
+			error: e.message
 		});
 	}
 }); 
@@ -400,7 +503,7 @@ app.delete("/persona/:id", async (req, res) => {
 	} catch (e) {
 		console.error(e.message);
 		res.status(413).send({
-			'Error': e.message
+			error: e.message
 		});
 	}
 });
@@ -457,16 +560,16 @@ app.post('/libro', async (req, res) => {
 		respuesta = await qy(query, [nombre, req.body.descripcion_libro, req.body.id_categoria, req.body.id_persona]);
 
 		res.status(200).send({
-			'Id': respuesta.insertId,
-			'Nombre': nombre,
-			'Descripcion': req.body.descripcion_libro,
-			'Categoria': req.body.id_categoria,
-			'Persona': req.body.id_persona
+			Id: respuesta.insertId,
+			Nombre: nombre,
+			Descripcion: req.body.descripcion_libro,
+			Categoria: req.body.id_categoria,
+			Persona: req.body.id_persona
 		});
 	} catch (e) {
 		console.log(e.message);
 		res.status(413).send({
-			'Error': e.message
+			error: e.message
 		});
 	}
 });
@@ -483,12 +586,12 @@ app.get('/libro', async (req, res) => {
 		const query = 'SELECT * FROM libros';
 		const respuesta = await qy(query);
 		res.status(200).send({
-			"respuesta": respuesta
+			respuesta: respuesta
 		});
 	} catch (e) {
 		console.error(e.message);
 		res.status(413).send({
-			"Error": e.message
+			error: e.message
 		});
 
 	}
@@ -511,12 +614,12 @@ app.get('/libro/:id', async (req, res) => {
 		}
 
 		res.status(200).send({
-			"respuesta": respuesta
+			respuesta: respuesta
 		});
 	} catch (e) {
 		console.error(e.message);
 		res.status(413).send({
-			"Error": e.message
+			error: e.message
 		});
 	}
 });
