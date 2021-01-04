@@ -149,64 +149,30 @@ app.post('/login', async (req, res) => {
 		})
 	}
 });
-/* Autenticación (Middleware) --------------------------------
 
-const auth = (req, res, next) => {
-	try {
-		let token = req.headers['authorization']
+// Autenticación (Middleware) --------------------------------
 
-		if (!token) {
-			console.log('error');
-			return;
-		}
+const auth = express.Router(); 
+auth.use((req, res, next) => {
+    const token = req.headers['authorization'];
+	
+    if (token) {
+      jwt.verify(token, 'Secret', (err, decoded) => {      
+        if (err) {
+          return res.send({ mensaje: 'Token inválida' });    
+        } else {   
+          next();
+        }
+      });
 
-		token = token.replace('Bearer ', '')
-
-		//Verify toma el token  y lo decodifica
-		jwt.verify(token, 'Secret', (err, user) => {
-			if (err) {
-				throw new Error('Token Invalido');
-			}
-		});
-
-		next();
-
-	} catch (e) {
-		console.log(e.message);
-		res.status(413).send({
-			error: e.message
-		});
-	};
-}
-
-app.use(auth()); */
-
-app.get('/biblioteca', (req, res) => {
-	let token = req.headers['authorization']
-
-	if(!token){
-		console.log('error');
-		return;
-	}
-
-	token = token.replace('Bearer ', '')
-
-	//Verify toma el token y lo decodifica
-	jwt.verify(token, 'Secret', (err, user) => {
-		if(err) {
-			res.status(401).send({
-				error: 'Token invalido'
-			})
-		} else {
-			//Recupera los datos del usuario que fue codificado en el token
-			//En este caso le hacemos un console log para ver los datos del token
-			console.log('esto es user ', user) 
-			res.send({
-				message: '¡Bienvenido a tu libreria!'
-			})
-		}
-	})
-});
+    } else {
+      res.send({ 
+          mensaje: 'Token no proveída.' 
+      });
+    }
+ });
+ 
+app.use(auth);
 
 
 // Desarrollo de la lógica en la API ////////////////////////////////
