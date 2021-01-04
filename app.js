@@ -43,15 +43,12 @@ const qy = util.promisify(conexion.query).bind(conexion);
 	en promesa la callback del pedido de query */
 
 
-// Establecer puerto  ----------------------------------------
+// Establecer puerto  ---------------------------------------------
 
 const port = process.env.PORT ? process.env.PORT : 3000;
 app.listen(port, () => {
 	console.log('Aplicación operativa.\nEscuchando el puerto ' + port)
 });
-
-
-
 
 // 1. Registración <<<<<<<<<<<<<<<<<< 
 
@@ -97,7 +94,7 @@ app.post('/login', async (req, res) => {
 			return;
 		}
 
-		// Paso 1 ENCUENTRO EL USUARIO EN LA BASE DE DATOS
+		// Paso 1 ENCUENTRO EL USUARIO EN LA BASE DE DATOS *************
 
 		// Chequeo si el usuario esta en mi base de datos
 		let query = 'SELECT * from usuarios WHERE nombre_usuario = ?';
@@ -107,7 +104,7 @@ app.post('/login', async (req, res) => {
 			throw new Error('El nombre de usuario no esta registrado')
 		}
 
-		// Paso 2 VERIFICO LA CLAVE
+		// Paso 2 VERIFICO LA CLAVE ************************************
 
 		// Consulto la clave encriptada de la base de datos
 		query = 'SELECT clave_encriptada FROM usuarios WHERE nombre_usuario = ?';
@@ -119,7 +116,7 @@ app.post('/login', async (req, res) => {
 			throw new Error('Contraseña incorrecta')
 		};
 		
-		// Paso 3 SESION
+		// Paso 3 SESION **********************************************
 
 		query = 'SELECT  email_usuario FROM usuarios WHERE nombre_usuario = ?';
 		let email = await qy(query, req.body.user);
@@ -150,7 +147,7 @@ app.post('/login', async (req, res) => {
 	}
 });
 
-// Autenticación (Middleware) --------------------------------
+// Autenticación (Middleware) ----------------------------------------
 
 const auth = express.Router(); 
 auth.use((req, res, next) => {
@@ -175,7 +172,7 @@ auth.use((req, res, next) => {
 app.use(auth);
 
 
-// Desarrollo de la lógica en la API ////////////////////////////////
+// Desarrollo de la lógica en la API //////////////////////////////////
 
 
 // CATEGORIA --------------------------------------------------------
