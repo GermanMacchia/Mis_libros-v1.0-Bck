@@ -1,6 +1,6 @@
 'use strict'
 
-/* Pedidos de paquetes ------------------------------------------*/
+// Pedidos de paquetes ------------------------------------------
 
 const express = require('express');
 const mysql = require('mysql');
@@ -9,16 +9,16 @@ const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
 const bcrypt = require('bcrypt')
 
-/* Declaración del paquete express en aplicación-----------------*/
+// Declaración del paquete express en aplicación-----------------
 
 const app = express();
 
-/* Llamada del middleware especifico del paquete-----------------*/
+// Llamada del middleware especifico del paquete-----------------
 
 app.use(express.json()); 		   //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
 
-/* Conexion con MySql ---------------------------------------*/
+// Conexion con MySql ---------------------------------------
 
 const conexion = mysql.createConnection({
 	host: 'localhost', 			   //por ahora porque trabajos de forma local
@@ -43,12 +43,46 @@ const qy = util.promisify(conexion.query).bind(conexion);
 	en promesa la callback del pedido de query */
 
 
-// Establecer puerto  ---------------------------------------------
+// Establecer puerto  -------------------------------------------
 
 const port = process.env.PORT ? process.env.PORT : 3000;
 app.listen(port, () => {
 	console.log('Aplicación operativa.\nEscuchando el puerto ' + port)
 });
+
+// Autenticación (Middleware) ----------------------------------------
+
+const auth = (req, res, next) => {
+    const token = req.headers['authorization'];
+	
+    if (token) {
+      jwt.verify(token, 'Secret', (err, decoded) => {      
+        if (err) {
+          return res.send({ mensaje: 'Token inválida' });    
+        } else {   
+          next();
+        }
+      });
+
+    } else {
+      res.send({ 
+          mensaje: 'Token no proveída.' 
+      });
+    }
+ };
+
+// Unless ---------------------------------------------------....
+
+auth.unless = unless;
+
+app.use(auth.unless({
+    path: [
+        { url: '/login', methods: ['POST'] },
+        { url: '/registro', methods: ['POST'] }
+    ]
+}));
+
+
 
 // 1. Registración <<<<<<<<<<<<<<<<<< 
 
@@ -147,37 +181,6 @@ app.post('/login', async (req, res) => {
 	}
 });
 
-// Autenticación (Middleware) ----------------------------------------
-
-const auth = (req, res, next) => {
-    const token = req.headers['authorization'];
-	
-    if (token) {
-      jwt.verify(token, 'Secret', (err, decoded) => {      
-        if (err) {
-          return res.send({ mensaje: 'Token inválida' });    
-        } else {   
-          next();
-        }
-      });
-
-    } else {
-      res.send({ 
-          mensaje: 'Token no proveída.' 
-      });
-    }
- };
-
-// UNLESS -----------------------------------------------------------------
-
-auth.unless = unless;
-
-app.use(auth.unless({
-    path: [
-        { url: '/login', methods: ['POST'] },
-        { url: '/registro', methods: ['POST'] }
-    ]
-}));
 
 // Desarrollo de la lógica en la API //////////////////////////////////
 
