@@ -1,0 +1,1 @@
+const categoriaService = require('../services/categoriaService.js')
