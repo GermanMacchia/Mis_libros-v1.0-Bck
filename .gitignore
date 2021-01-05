@@ -1,2 +1,8 @@
-
+package-lock.json
+package.json
+Consignas.txt
+Integrantes.txt
 node_modules
+.gitignore
+sql.jpg
+mybooks.sql
