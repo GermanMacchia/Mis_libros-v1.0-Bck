@@ -198,18 +198,23 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 
 	try {
 		//Validación de envio correcto de informacion
-		if (!req.body.nombre_categoria) {
+		if (!req.body.nombre) {
 			throw new Error('Falta enviar el nombre');
 			//Si no hay declaración de JSON "nombre" en el body tira error
 		}
+
+		if (conEspacios(req.body.nombre)){
+			throw new Error('Falta enviar el nombre con contenido');
+			//Si no hay contenido en JSON "nombre" en el body tira error
+		}
 		//Declaración de variable con funcion para estandarizarla en mayusculas
-		const nombre = req.body.nombre_categoria.toUpperCase(); 
+		const nombre = req.body.nombre.toUpperCase(); 
 
 		//Verifico que no exista previamente esa categoria
 		let query = 'SELECT id_categoria FROM genero WHERE nombre_categoria = ?';
 		let respuesta = await qy(query, [nombre]);
 
-		if (respuesta.length > 0) { // Si no me arroja ningun resultado entonces el query esta vacio
+		if (respuesta.length > 0) { // Si arroja al menos un resultado entonces la categoria existe
 			throw new Error('Ese nombre de categoria ya existe')
 		}
 
@@ -261,6 +266,10 @@ app.get('/categoria/:id', async (req, res) => {
 		//Consulta MySQL
 		const query = 'SELECT * FROM genero WHERE id_categoria=?' 
 		const respuesta = await qy(query, [req.params.id]); 
+
+		if (respuesta.length == 0) { // Si no arroja un resultado entonces la categoria no existe
+			throw new Error('Categoria no encontrada')
+		}
 
 		res.status(200).send({
 			respuesta
@@ -326,15 +335,29 @@ apellido: string, alias: string, email: string} - status: 413,
 app.post('/persona', async (req, res) => {
 	try {
 		//Validación de envio correcto de informacion
-		if (!req.body.email_persona || !req.body.apellido_persona || !req.body.nombre_persona) {
+		if (!req.body.email || !req.body.apellido || !req.body.nombre) {
 			throw new Error('Faltan datos');
 			//Si no hay declaraciones JSON en el body tira error (alias_persona puede permanecer NULL)
 		}
+
+		if (conEspacios(req.body.nombre)){
+			throw new Error('Falta enviar el nombre con contenido');
+			//Si no hay contenido en JSON "nombre" en el body tira error
+		}
+		if (conEspacios(req.body.email)){
+			throw new Error('Falta enviar el email con contenido');
+			//Si no hay contenido en JSON "email" en el body tira error
+		}
+		if (conEspacios(req.body.apellido)){
+			throw new Error('Falta enviar el apellido con contenido');
+			//Si no hay contenido en JSON "apellido" en el body tira error
+		}
+
 		//Declaracion de variables y standarizacion de datos
-		const email = req.body.email_persona.toUpperCase();
-		const apellido = req.body.apellido_persona.toUpperCase();
-		const nombre = req.body.nombre_persona.toUpperCase();
-		const alias = req.body.alias_persona.toUpperCase();
+		const email = req.body.email.toUpperCase();
+		const apellido = req.body.apellido.toUpperCase();
+		const nombre = req.body.nombre.toUpperCase();
+		const alias = req.body.alias.toUpperCase();
 
 		//Verifico si existe previamente esa persona a través del email
 		let query = 'SELECT id_persona FROM personas WHERE email_persona = ?';
@@ -424,11 +447,30 @@ persona" */
 app.put('/persona/:id', async (req, res) => {
 	const id = req.params.id;
 	try {
+		//Validación de envio correcto de informacion
+		if (!req.body.email || !req.body.apellido || !req.body.nombre) {
+			throw new Error('Faltan datos');
+			//Si no hay declaraciones JSON en el body tira error (alias_persona puede permanecer NULL)
+		}
+
+		if (conEspacios(req.body.nombre)){
+			throw new Error('Falta enviar el nombre con contenido');
+			//Si no hay contenido en JSON "nombre" en el body tira error
+		}
+		if (conEspacios(req.body.email)){
+			throw new Error('Falta enviar el email con contenido');
+			//Si no hay contenido en JSON "email" en el body tira error
+		}
+		if (conEspacios(req.body.apellido)){
+			throw new Error('Falta enviar el apellido con contenido');
+			//Si no hay contenido en JSON "apellido" en el body tira error
+		}
+
 		//Declaracion e inicializacion de variables con standarizacion de datos con función uppercase
-		const email = req.body.email_persona.toUpperCase();
-		const apellido = req.body.apellido_persona.toUpperCase();
-		const nombre = req.body.nombre_persona.toUpperCase();
-		const alias = req.body.alias_persona.toUpperCase();
+		const email = req.body.email.toUpperCase();
+		const apellido = req.body.apellido.toUpperCase();
+		const nombre = req.body.nombre.toUpperCase();
+		const alias = req.body.alias.toUpperCase();
 
 		//Verifico que los datos pertenecen al mismo id y además que el email no se ha modificado
 		let query = 'SELECT * FROM personas WHERE email_persona = ? AND id_persona = ?';
@@ -510,11 +552,16 @@ obligatorios", "no existe la categoria indicada", "no existe la persona indicada
 app.post('/libro', async (req, res) => {
 	try {
 		//Validación de envio correcto de informacion
-		if (!req.body.nombre_libro || !req.body.descripcion_libro || !req.body.id_categoria) {
+		if (!req.body.nombre || !req.body.descripcion || !req.body.categoria_id) {
 			throw new Error('Nombre y Categoría son datos obligatorios');
 		}
 
-		const nombre = req.body.nombre_libro.toUpperCase();
+		if (conEspacios(req.body.nombre)){
+			throw new Error('Falta enviar el nombre con contenido');
+			//Si no hay contenido en JSON "nombre" en el body tira error
+		}
+
+		const nombre = req.body.nombre.toUpperCase();
 
 		//Verifico que no exista previamente el libro
 		let query = 'SELECT nombre_libro FROM libros WHERE nombre_libro = ?';
@@ -526,7 +573,7 @@ app.post('/libro', async (req, res) => {
 
 		//Verifico que exista previamente esa categoria
 		query = 'SELECT id_categoria FROM genero WHERE id_categoria = ?';
-		respuesta = await qy(query, [req.body.id_categoria]);
+		respuesta = await qy(query, [req.body.categoria_id]);
 
 		if (respuesta.length == 0) {
 			throw new Error('No existe la categoria indicada')
@@ -535,7 +582,7 @@ app.post('/libro', async (req, res) => {
 		if (req.body.id_persona != null) {
 			//Verifico que exista previamente la persona
 			query = 'SELECT id_persona FROM personas WHERE id_persona = ?';
-			respuesta = await qy(query, [req.body.id_persona]);
+			respuesta = await qy(query, [req.body.persona_id]);
 
 			if (respuesta.length == 0) {
 				throw new Error('No existe la persona indicada')
@@ -544,14 +591,14 @@ app.post('/libro', async (req, res) => {
 
 		//Guardo el nuevo libro
 		query = 'INSERT INTO libros (nombre_libro, descripcion_libro, id_categoria, id_persona) VALUE (?,?,?,?)';
-		respuesta = await qy(query, [nombre, req.body.descripcion_libro, req.body.id_categoria, req.body.id_persona]);
+		respuesta = await qy(query, [nombre, req.body.descripcion, req.body.categoria_id, req.body.persona_id]);
 
 		res.status(200).send({
 			Id: respuesta.insertId,
 			Nombre: nombre,
-			Descripcion: req.body.descripcion_libro,
-			Categoria: req.body.id_categoria,
-			Persona: req.body.id_persona
+			Descripcion: req.body.descripcion,
+			Categoria: req.body.categoria_id,
+			Persona: req.body.persona_id
 		});
 	} catch (e) {
 		console.log(e.message);
@@ -621,11 +668,11 @@ app.get('/libro/:id', async (req, res) => {
 
 app.put('/libro/:id', async (req, res) => {
 	try {
-		if (!req.body.nombre_libro || !req.body.descripcion_libro || !req.body.id_categoria) {
+		if (!req.body.nombre || !req.body.descripcion || !req.body.categoria_id) {
 			throw new Error('No se enviaron los datos necesarios para hacer un update');
 		}
-		const nombre = req.body.nombre_libro.toUpperCase();
-		const descripcion = req.body.descripcion_libro.toUpperCase();
+		const nombre = req.body.nombre.toUpperCase();
+		const descripcion = req.body.descripcion.toUpperCase();
 		// verifico si existe el libro
 		let query = 'SELECT * FROM libros WHERE id_libro = ?'
 		let respuesta = await qy(query, [req.params.id]);
@@ -634,28 +681,28 @@ app.put('/libro/:id', async (req, res) => {
 		}
 		// verifico que la categoria existe
 		query = 'SELECT * FROM genero WHERE id_categoria = ?'
-		respuesta = await qy(query, [req.body.id_categoria]);
+		respuesta = await qy(query, [req.body.categoria_id]);
 		if (respuesta.length == 0) {
 			throw new Error("No existe la categoria seleccionada");
 		}
 		// verifico que la persona existe en caso de que no tenga valor Null
-		if (req.body.id_persona != null) {
+		if (req.body.persona_id != null) {
 			query = 'SELECT nombre_persona FROM personas WHERE id_persona = ?';
-			respuesta = await qy(query, [req.body.id_persona]);
+			respuesta = await qy(query, [req.body.persona_id]);
 			if (respuesta.length < 1) {
 				throw new Error("No existe esa persona");
 			}
 		}
 		// Update
 		query = 'UPDATE libros SET nombre_libro = ?, descripcion_libro = ?, id_categoria = ?, id_persona = ? WHERE id_libro = ?';
-		respuesta = await qy(query, [nombre, descripcion, req.body.id_categoria, req.body.id_persona, req.params.id]);
+		respuesta = await qy(query, [nombre, descripcion, req.body.categoria_id, req.body.persona_id, req.params.id]);
 
 		res.status(200).send({
 			'id': req.params.id,
 			'nombre': nombre,
 			'descripcion': descripcion,
-			'categoria': req.body.id_categoria,
-			'persona': req.body.id_persona
+			'categoria': req.body.categoria_id,
+			'persona': req.body.persona_id
 		});
 
 	} catch (e) {
@@ -686,21 +733,21 @@ app.put('/libro/prestar/:id', async (req, res) => {
 		}
 
 		// verifico si el libro ya no fue prestado
-		const idPersona = respuesta[0].id_persona;
+		const idPersona = respuesta[0].persona_id;
 		if (idPersona != null) {
 			throw new Error("El libro ya fue prestado");
 		}
 
 		// Verifico que la persona existe
 		query = 'SELECT * FROM personas WHERE id_persona = ?';
-		respuesta = await qy(query, [req.body.id_persona]);
+		respuesta = await qy(query, [req.body.persona_id]);
 		if (respuesta.length == 0) {
 			throw new Error("No se encontro la persona a la que se quiere prestar el libro");
 		}
 
 		// Update
 		query = 'UPDATE libros SET id_persona = ? WHERE id_libro = ?';
-		respuesta = await qy(query, [req.body.id_persona, req.params.id]);
+		respuesta = await qy(query, [req.body.persona_id, req.params.id]);
 
 		res.status(200).send({
 			"respuesta": "El libro se presto correctamente"
@@ -792,3 +839,12 @@ app.delete("/libro/:id", async (req, res) => {
 		});
 	}
 });
+
+function conEspacios(campo){
+
+	if(campo.trim().length == 0){
+		return true;
+	}else{
+		return false;
+	}
+}
