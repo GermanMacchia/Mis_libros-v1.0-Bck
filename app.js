@@ -277,7 +277,7 @@ app.get('/categoria/:id', async (req, res) => {
 	} catch (e) {
 		console.log(e.message);
 		res.status(413).send({
-			error: 'Error inesperado'
+			error: e.message
 		});
 	}
 });
@@ -470,8 +470,11 @@ app.put('/persona/:id', async (req, res) => {
 		const email = req.body.email.toUpperCase();
 		const apellido = req.body.apellido.toUpperCase();
 		const nombre = req.body.nombre.toUpperCase();
-		const alias = req.body.alias.toUpperCase();
-
+		const alias = req.body.alias;
+		if (alias != null){
+			alias = alias.toUpperCase();
+		}
+		
 		//Verifico que los datos pertenecen al mismo id y además que el email no se ha modificado
 		let query = 'SELECT * FROM personas WHERE email_persona = ? AND id_persona = ?';
 		let respuesta = await qy(query, [email, id]);
@@ -485,8 +488,11 @@ app.put('/persona/:id', async (req, res) => {
 		respuesta = await qy(query, [nombre, apellido, alias, id]);
 
 		res.status(200).send({
-			respuesta
-		})
+			Nombre: nombre,
+			Apellido: apellido,
+			Email: email,
+			Alias: alias
+		});
 	} catch (e) {
 		console.log(e.message);
 		res.status(413).send({
@@ -660,7 +666,7 @@ app.get('/libro/:id', async (req, res) => {
 
 /* 13 - Put ID <<<<<<<<<<<<<<<<<<<
 
-'/libro/:id' y {id: numero, nombre:string, descripcion:string, categoria_id:numero,
+'/libro/:id' y {id: numero, nombre:string, descripcion:string, categoria_id:numero,     !!!!doble id, en ruta y json!!!!!
  persona_id:numero/null} devuelve status 200 y {id: numero, nombre:string, 
  descripcion:string, categoria_id:numero, persona_id:numero/null} modificado o 
  bien status 413, {mensaje: <descripcion del error>} "error inesperado",  
@@ -726,14 +732,14 @@ app.put('/libro/prestar/:id', async (req, res) => {
 	try {
 
 		// verifico si existe el libro
-		let query = 'SELECT * FROM libros WHERE id_libro = ?'
+		let query = 'SELECT * FROM libros WHERE id_libro = ?';
 		let respuesta = await qy(query, [req.params.id]);
 		if (respuesta.length == 0) {
 			throw new Error("No existe ese libro");
 		}
 
 		// verifico si el libro ya no fue prestado
-		const idPersona = respuesta[0].persona_id;
+		const idPersona = respuesta[0].id_persona;
 		if (idPersona != null) {
 			throw new Error("El libro ya fue prestado");
 		}
