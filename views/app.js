@@ -23,7 +23,6 @@ app.use(express.static('public')); // permite uso de la carpeta con el nombre ex
 
 // a partir del Util de express 'promisify' nos permite crear async/await en la conexion MySql
 
-const qy = util.promisify(conexion.query).bind(conexion);
 
 /* ¿Por qué? Porque Async/await solo puede ubicarse en el lugar de 
 	las PROMESAS, NO SOBRE CALLBACK´s. Entonces lo que hace es transformar
@@ -191,12 +190,15 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 		}
 		//Declaración de variable con funcion para estandarizarla en mayusculas
 		const nombre = req.body.nombre_categoria.toUpperCase(); 
+		var verificacion = categoriaController.verificarCategoria(nombre)
+
+		if (verificacion.lenght > 0){
+			throw new Error('Categoria Existente');
+		}
 
 		var nuevaCategoria = categoriaController.postCategoria(nombre);
 
-		res.status(200).send({
-			Nombre: nombre,
-			Id: respuesta.insertId
+		res.status(200).send({nuevaCategoria
 		});
 	} catch (e) {
 		console.log(e.message);
