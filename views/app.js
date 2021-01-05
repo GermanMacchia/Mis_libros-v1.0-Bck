@@ -7,9 +7,9 @@ const express = require('express');
 const util = require('util');
 const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const categoriaController = require('../controllers/categoriaController.js');
 
-const conexion = require('./db.js');
 // Declaración del paquete express en aplicación-----------------
 
 const app = express();
@@ -19,7 +19,7 @@ const app = express();
 app.use(express.json()); 		   //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
 
-connectDataBase();
+
 
 // a partir del Util de express 'promisify' nos permite crear async/await en la conexion MySql
 
@@ -192,17 +192,7 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 		//Declaración de variable con funcion para estandarizarla en mayusculas
 		const nombre = req.body.nombre_categoria.toUpperCase(); 
 
-		//Verifico que no exista previamente esa categoria
-		let query = 'SELECT id_categoria FROM genero WHERE nombre_categoria = ?';
-		let respuesta = await qy(query, [nombre]);
-
-		if (respuesta.length > 0) { // Si no me arroja ningun resultado entonces el query esta vacio
-			throw new Error('Ese nombre de categoria ya existe')
-		}
-
-		//Guardo la nueva categoría
-		query = 'INSERT INTO genero (nombre_categoria) VALUE (?)';
-		respuesta = await qy(query, [nombre]);
+		var nuevaCategoria = categoriaController.postCategoria(nombre);
 
 		res.status(200).send({
 			Nombre: nombre,
