@@ -277,9 +277,17 @@ indicada" */
 
 app.delete('/categoria/:id', async(req, res) => {
     try {
-        //chequeo en 'libros' para ver si la categoria esta en uso declarando query y respuesta
-        let query = 'SELECT * FROM libros WHERE id_categoria = ?';
+        //verificamos si la categoria existe
+        let query = 'SELECT * FROM genero WHERE id_categoria = ?';
         let respuesta = await qy(query, [req.params.id]);
+
+        if (respuesta.length == 0) {
+            throw new Error("Esta categoria no existe");
+        }
+
+        //chequeo en 'libros' para ver si la categoria esta en uso declarando query y respuesta
+        query = 'SELECT * FROM libros WHERE id_categoria = ?';
+        respuesta = await qy(query, [req.params.id]);
 
         if (respuesta.length > 0) {
             throw new Error("Esta categoria tiene libros asociados, no se puede eliminar");
@@ -449,9 +457,17 @@ no se puede eliminar" */
 
 app.delete("/persona/:id", async(req, res) => {
     try {
-        //chequeo en 'libros' para ver si la persona esta en uso
-        let query = "SELECT * FROM libros WHERE id_persona = ?";
+        //verifico que la persona existe
+        let query = 'SELECT * FROM personas WHERE id_persona = ?';
         let respuesta = await qy(query, [req.params.id]);
+
+        if (respuesta.length == 0) {
+            throw new Error("Esta persona no se encuentra registrada");
+        }
+
+        //chequeo en 'libros' para ver si la persona esta en uso
+        query = "SELECT * FROM libros WHERE id_persona = ?";
+        respuesta = await qy(query, [req.params.id]);
 
         if (respuesta.length > 0) {
             throw new Error(
