@@ -50,6 +50,36 @@ app.listen(port, () => {
     console.log('Aplicación operativa.\nEscuchando el puerto ' + port)
 });
 
+// Autenticación (Middleware) ----------------------------------------
+
+const auth = (req, res, next) => {
+    const token = req.headers['authorization'];
+
+    if (token) {
+        jwt.verify(token, 'Secret', (err, decoded) => {
+            if (err) {
+                return res.send({ mensaje: 'Token inválida' });
+            } else {
+                next();
+            }
+        });
+
+    } else {
+        res.send({
+            mensaje: 'Token no proveída.'
+        });
+    }
+};
+
+auth.unless = unless;
+
+app.use(auth.unless({
+    path: [
+        { url: '/login', methods: ['POST'] },
+        { url: '/registro', methods: ['POST'] }
+    ]
+}));
+
 // 1. Registración <<<<<<<<<<<<<<<<<< 
 
 app.post('/registro', async(req, res) => {
@@ -145,30 +175,6 @@ app.post('/login', async(req, res) => {
         })
     }
 });
-
-// Autenticación (Middleware) ----------------------------------------
-
-const auth = express.Router();
-auth.use((req, res, next) => {
-    const token = req.headers['authorization'];
-
-    if (token) {
-        jwt.verify(token, 'Secret', (err, decoded) => {
-            if (err) {
-                return res.send({ mensaje: 'Token inválida' });
-            } else {
-                next();
-            }
-        });
-
-    } else {
-        res.send({
-            mensaje: 'Token no proveída.'
-        });
-    }
-});
-
-app.use(auth);
 
 
 // Desarrollo de la lógica en la API //////////////////////////////////
