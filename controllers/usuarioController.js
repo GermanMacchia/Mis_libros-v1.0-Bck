@@ -16,5 +16,9 @@ module.exports = {
 	idUsuario: async (usuario) => {
 		var idUsuario = await usuarioService.verIdUsuario(usuario);
 		return idUsuario;
+	},
+	guardarUsuario: async ([usuario, claveEncriptada, email, celu]) => {
+		var guardarUsuario = await usuarioService.guardarNuevoUsuario([usuario, claveEncriptada, email, celu]);
+		return guardarUsuario;
 	}
 }

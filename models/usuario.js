@@ -20,5 +20,10 @@ module.exports = {
 		var respuesta = await conexion.query(
 			'SELECT usuario_id  FROM usuarios WHERE nombre_usuario = ?', [usuario]);
 		return respuesta;
+	},
+	saveUser: async ([usuario, claveEncriptada, email, celu]) => {
+		var respuesta = await conexion.query(
+			'INSERT INTO usuarios (nombre_usuario, clave_encriptada, email_usuario, celu_usuario) VALUE (?,?,?,?)', [usuario, claveEncriptada, email, celu]);
+		return respuesta;
 	}
 }

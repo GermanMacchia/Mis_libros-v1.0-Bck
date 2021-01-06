@@ -1,9 +1,7 @@
 'use strict'
 
 // Pedidos de paquetes ------------------------------------------
-
 const express = require('express');
-
 const util = require('util');
 const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
@@ -14,81 +12,68 @@ const libroController = require('../controllers/libroController.js');
 const usuarioController = require('../controllers/usuarioController.js');
 
 // Declaración del paquete express en aplicación-----------------
-
 const app = express();
 
 // Llamada del middleware especifico del paquete-----------------
-
 app.use(express.json()); 		   //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
 
 // Establecer puerto  -------------------------------------------
-
 const port = process.env.PORT ? process.env.PORT : 3000;
 app.listen(port, () => {
 	console.log('Aplicación operativa.\nEscuchando el puerto ' + port)
 });
 
 // Autenticación (Middleware) ----------------------------------------
-
 const auth = (req, res, next) => {
-    const token = req.headers['authorization'];
-	
-    if (token) {
-      jwt.verify(token, 'Secret', (err, decoded) => {      
-        if (err) {
-          return res.send({ mensaje: 'Token inválida' });    
-        } else {   
-          next();
-        }
-      });
-
-    } else {
-      res.send({ 
-          mensaje: 'Token no proveída.' 
-      });
-    }
- };
+	const token = req.headers['authorization'];
+	if (token) {
+		jwt.verify(token, 'Secret', (err, decoded) => {
+			if (err) {
+				return res.send({
+					mensaje: 'Token inválida'
+				});
+			} else {
+				next();
+			}
+		});
+	} else {
+		res.send({
+			mensaje: 'Token no proveída.'
+		});
+	}
+};
 
 // Unless ---------------------------------------------------....
-
 auth.unless = unless;
-
 app.use(auth.unless({
-    path: [
-        { url: '/login', methods: ['POST'] },
-        { url: '/registro', methods: ['POST'] }
-    ]
+	path: [{
+		url: '/login',
+		methods: ['POST']
+	}, {
+		url: '/registro',
+		methods: ['POST']
+	}]
 }));
 
-
-
 // 1. Registración <<<<<<<<<<<<<<<<<< 
-
 app.post('/registro', async (req, res)=>{
 	try{
 		if(!req.body.usuario || !req.body.clave || !req.body.email || !req.body.celu){
 			throw new Error('No enviaste todos los datos necesarios');
 		}
-
-		const email = req.body.email.toUpperCase();
-
-		/* verifico que no exista el nombre de usuario
-		consultando en la base de datos */
-		let query = 'SELECT * from usuarios WHERE nombre_usuario = ?';
-		let respuesta = await qy(query, [req.body.usuario]);
-
-		if (respuesta.length > 0) { // Si no me arroja ningun resultado entonces el query esta vacio
+		let email = req.body.email.toUpperCase();
+		let usuario = req.body.usuario;
+		let celu = req.body.celu;
+		//VERIFICACIÓN
+		let respuesta = await usuarioController.nombreUsuario(usuario);
+		if (respuesta.length > 0) { 
 			throw new Error('Nombre de Usuario existente')
 		}
-		//Si esta todo bien encripto la clave (el bcrypt es asincronico)
+		//ENCRIPTACIÓN DE CLAVE
 		const claveEncriptada = await bcrypt.hash(req.body.clave, 10);
-
-		//Guardar el usuario con la clave encriptada
-
-		query = 'INSERT INTO usuarios (nombre_usuario, clave_encriptada, email_usuario, celu_usuario) VALUE (?,?,?,?)';
-		respuesta = await qy(query, [req.body.usuario, claveEncriptada, email, req.body.celu]);
-
+		//GUARDAR USUARIO NUEVO
+		respuesta = await usuarioController.guardarUsuario([usuario, claveEncriptada, email, celu]);
 		res.send({message: "Se registro correctamente"});
 	}
 	catch(e){

@@ -16,6 +16,10 @@ module.exports = {
 	verIdUsuario: async (usuario) => {
 		var verIdUsuario = await usuarioModel.checkIdUser(usuario);
 		return verIdUsuario;
+	},
+	guardarNuevoUsuario: async ([usuario, claveEncriptada, email, celu]) => {
+		var verIdUsuario = await usuarioModel.saveUser([usuario, claveEncriptada, email, celu]);
+		return verIdUsuario;
 	}
 }
 
