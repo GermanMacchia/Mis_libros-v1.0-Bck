@@ -8,6 +8,7 @@ const util = require('util');
 const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
 const bcrypt = require('bcrypt')
+const cors = require('cors');
 
 /* Declaración del paquete express en aplicación-----------------*/
 
@@ -17,6 +18,7 @@ const app = express();
 
 app.use(express.json()); //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
+app.use(cors()); //verifica que dominios pueden acceder a los recursos de la API. Como no sabemos cual es el dominio que vamos a utilizar, habilitamos todos.
 
 /* Conexion con MySql ---------------------------------------*/
 
