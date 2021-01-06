@@ -10,7 +10,11 @@ module.exports = {
 		return vverificarCategoriaId;
 	},
 	guardarNuevoLibro: async ([nombre, descripcion, idCategoria]) => {
-		var guardarNuevoLibro = await libroModel.SaveNewBook([nombre, descripcion, idCategoria]);
+		var guardarNuevoLibro = await libroModel.saveNewBook([nombre, descripcion, idCategoria]);
 		return guardarNuevoLibro;
+	},
+	verlistaLibros: async () => {
+		var verlistaLibros = await libroModel.seeListBooks();
+		return verlistaLibros;
 	}
 }

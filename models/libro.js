@@ -11,11 +11,14 @@ module.exports = {
 			'SELECT id_categoria FROM genero WHERE id_categoria = ?', [idCategoria]);
 		return respuesta;
 	},
-	SaveNewBook: async ([nombre, descripcion, idCategoria]) => {
+	saveNewBook: async ([nombre, descripcion, idCategoria]) => {
 		var respuesta = await conexion.query(
 			'INSERT INTO libros (nombre_libro, descripcion_libro, id_categoria) VALUE (?,?,?)', [nombre, descripcion, idCategoria]);
 		return respuesta;
+	},
+	seeListBooks: async () => {
+		var respuesta = await conexion.query(
+			'SELECT * FROM libros');
+		return respuesta;
 	}
-
-	
 }

@@ -458,7 +458,6 @@ app.post('/libro', async (req, res) => {
 	}
 });
 
-
 /* 11 - Get <<<<<<<<<<<<<<<<<<
 
 GET '/libro' devuelve 200 y [{id: numero, nombre:string, descripcion:string, 
@@ -467,8 +466,7 @@ categoria_id:numero, persona_id:numero/null}] o bien 413,
 
 app.get('/libro', async (req, res) => {
 	try {
-		const query = 'SELECT * FROM libros';
-		const respuesta = await qy(query);
+		const respuesta = await libroController.verLibros();
 		res.status(200).send({
 			respuesta: respuesta
 		});
