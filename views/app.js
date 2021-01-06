@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
 const bcrypt = require('bcrypt');
 const categoriaController = require('../controllers/categoriaController.js');
+const personaController = require('../controllers/personaController.js');
 
 // Declaración del paquete express en aplicación-----------------
 
@@ -180,24 +181,22 @@ Categoria recibe: {nombre:sting} retorna status 200{id: numerico, nombre:string}
 status 413, {mensaje: <descripcion del error> que puede ser:
 "faltan datos", "ese nombre de categoria ya existe", "error inesperado" **/
 
-app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de seguir con el programa 
+app.post('/categoria', async (req, res) => { 
 
 	try {
-		//Validación de envio correcto de informacion
+		//VALIDACIÓN
 		if (!req.body.nombre_categoria) {
 			throw new Error('Falta enviar el nombre');
-			//Si no hay declaración de JSON "nombre" en el body tira error
 		}
-		//Declaración de variable con funcion para estandarizarla en mayusculas
-		const nombre = req.body.nombre_categoria.toUpperCase(); 
-		var verificacion = categoriaController.verificarCategoria(nombre)
-
-		if (verificacion.lenght > 0){
+		//STANDARIZACIÓN
+		let nombre = req.body.nombre_categoria.toUpperCase(); 	
+		//VERIFICACIÓN
+		let verificacion = await categoriaController.verificarCategoria(nombre)
+		if (verificacion.length > 0){
 			throw new Error('Categoria Existente');
 		}
-
-		var nuevaCategoria = categoriaController.postCategoria(nombre);
-
+		//INSERCIÓN
+		let nuevaCategoria = await categoriaController.postCategoria(nombre);
 		res.status(200).send({nuevaCategoria
 		});
 	} catch (e) {
@@ -215,11 +214,8 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 
 app.get('/categoria', async (req, res) => {
 	try {
-		const query = 'SELECT * FROM genero';
-		const respuesta = await qy(query);
-
-		res.status(200).send({
-			respuesta: respuesta // Devuelve JSON 
+		let respuesta = await categoriaController.verCategorias();
+		res.status(200).send({respuesta // Devuelve JSON 
 		});
 	} catch (e) {
 		console.log(e.message);
@@ -237,10 +233,8 @@ ser: "error inesperado", "categoria no encontrada" */
 
 app.get('/categoria/:id', async (req, res) => {
 	try {
-		//Consulta MySQL
-		const query = 'SELECT * FROM genero WHERE id_categoria=?' 
-		const respuesta = await qy(query, [req.params.id]); 
-
+		let id = req.params.id;
+		let respuesta = await categoriaController.verCategoriaId(id);
 		res.status(200).send({
 			respuesta
 		});
@@ -261,27 +255,21 @@ indicada" */
 
 app.delete('/categoria/:id', async (req, res) => {
 	try {
-		//verificamos si la categoria existe
-        let query = 'SELECT * FROM genero WHERE id_categoria = ?';
-        let respuesta = await qy(query, [req.params.id]);
-
+		//VERIFICACIÓN
+        let id = req.params.id;
+        let respuesta = await categoriaController.verificarCategoriaID(id);
         if (respuesta.length == 0) {
             throw new Error("Esta categoria no existe");
         }
-
-		//chequeo en 'libros' para ver si la categoria esta en uso declarando query y respuesta
-		query = 'SELECT * FROM libros WHERE id_categoria = ?';
-		respuesta = await qy(query, [req.params.id]);
-
+		//CHEQUEO DE LIBROS ASOCIADOS
+		respuesta = await categoriaController.chequeoLibrosCategoria(id);
 		if (respuesta.length > 0) {
 			throw new Error("Esta categoria tiene libros asociados, no se puede eliminar");
 		}
-
-		query = 'DELETE FROM genero WHERE id_categoria = ?';
-		respuesta = await qy(query, [req.params.id]);
-
-		res.status(200).send({
-			respuesta: 'Se borro correctamente'
+		//BORRAR CATEGORIA
+		respuesta = await categoriaController.borrarCategoria(id)
+		console.log(respuesta)
+		res.status(200).send({respuesta:'Se borro correctamente la categoria'
 		});
 	} catch (e) {
 		console.error(e.message);
@@ -304,30 +292,22 @@ apellido: string, alias: string, email: string} - status: 413,
 
 app.post('/persona', async (req, res) => {
 	try {
-		//Validación de envio correcto de informacion
+		//VALIDACIÓN
 		if (!req.body.email_persona || !req.body.apellido_persona || !req.body.nombre_persona) {
-			throw new Error('Faltan datos');
-			//Si no hay declaraciones JSON en el body tira error (alias_persona puede permanecer NULL)
+			throw new Error('Faltan datos'); // alias permite null
 		}
-		//Declaracion de variables y standarizacion de datos
+		//STANDARIZACIÓN
 		const email = req.body.email_persona.toUpperCase();
 		const apellido = req.body.apellido_persona.toUpperCase();
 		const nombre = req.body.nombre_persona.toUpperCase();
 		const alias = req.body.alias_persona.toUpperCase();
-
-		//Verifico si existe previamente esa persona a través del email
-		let query = 'SELECT id_persona FROM personas WHERE email_persona = ?';
-		let respuesta = await qy(query, [email]);
-
-		//Si no me arroja ningun resultado entonces la consulta del query esta vacia
+		//VERIFICACIÓN
+		let respuesta = await personaController.verificarPersona(email);
 		if (respuesta.length > 0) {
 			throw new Error('El email ya se encuentra registrado')
 		}
-		//Si no hay resultado entonces el ingreso es inexistente
-		//Procedo a guardar los datos
-		query = 'INSERT INTO personas (nombre_persona, apellido_persona, email_persona, alias_persona) VALUES (?,?,?,?)';
-		respuesta = await qy(query, [nombre, apellido, email, alias]);
-
+		//GUARDAR
+		respuesta = await personaController.guardarPersona([nombre, apellido, email, alias]);
 		res.status(200).send({
 			Id: respuesta.insertId,
 			Nombre: nombre,
@@ -351,8 +331,7 @@ string, alias: string, email; string}] o bien status 413 y [] */
 
 app.get('/persona', async (req, res) => {
 	try {
-		const query = 'SELECT * FROM personas'
-		const respuesta = await qy(query);
+		let respuesta = await personaController.verPersonas();
 		res.status(200).send({
 			respuesta: respuesta
 		});
@@ -374,13 +353,11 @@ apellido: string, alias: string, email; string} - status 413,
 
 app.get('/persona/:id', async (req, res) => {
 	try {
-		const query = 'SELECT * FROM personas WHERE id_persona = ?';
-		const respuesta = await qy(query, [req.params.id]);
-
+		let id = req.params.id;
+		let respuesta = await personaController.verPersonaId(id);
 		if (respuesta.length == 0) {
 			throw new Error('No se encuentra esa persona');
 		}
-
 		res.status(200).send({
 			respuesta: respuesta
 		});
@@ -401,28 +378,22 @@ retorna status 200 y el objeto modificado o bien status 413,
 persona" */
 
 app.put('/persona/:id', async (req, res) => {
-	const id = req.params.id;
 	try {
-		//Declaracion e inicializacion de variables con standarizacion de datos con función uppercase
-		const email = req.body.email_persona.toUpperCase();
-		const apellido = req.body.apellido_persona.toUpperCase();
-		const nombre = req.body.nombre_persona.toUpperCase();
-		const alias = req.body.alias_persona.toUpperCase();
-
-		//Verifico que los datos pertenecen al mismo id y además que el email no se ha modificado
-		let query = 'SELECT * FROM personas WHERE email_persona = ? AND id_persona = ?';
-		let respuesta = await qy(query, [email, id]);
-
+		let id = req.params.id;
+		//STANDARIZACIÓN
+		let email = req.body.email_persona.toUpperCase();
+		let apellido = req.body.apellido_persona.toUpperCase();
+		let nombre = req.body.nombre_persona.toUpperCase();
+		let alias = req.body.alias_persona.toUpperCase();
+		//VERIFICACIÓN
+		let respuesta = await personaController.verificacionDoble([email, id]);
 		if (respuesta.length < 1) {
 			throw new Error('El email no se puede modificar');
 		}
-
-		//Procedo a la inserción de datos
-		query = 'UPDATE personas SET nombre_persona = ?, apellido_persona = ?, alias_persona = ? WHERE id_persona = ?';
-		respuesta = await qy(query, [nombre, apellido, alias, id]);
-
+		//INSERCIÓN
+		respuesta = await personaController.actualizarPersona([nombre, apellido, alias, id]);
 		res.status(200).send({
-			respuesta
+			respuesta: 'La persona se ha modificado con exito'
 		})
 	} catch (e) {
 		console.log(e.message);
@@ -433,7 +404,6 @@ app.put('/persona/:id', async (req, res) => {
 }); 
 
 /* 9 - Delete ID <<<<<<<<<<<<<<<<<<
-
 '/persona/:id' retorna: 200 y {mensaje: "se borro correctamente"} o 
 bien 413, {mensaje: <descripcion del error>} "error 
 inesperado", "no existe esa persona", "esa persona tiene libros asociados, 
@@ -441,28 +411,21 @@ no se puede eliminar" */
 
 app.delete("/persona/:id", async (req, res) => {
 	try {
-
-		//verifico que la persona existe
-        let query = 'SELECT * FROM personas WHERE id_persona = ?';
-        let respuesta = await qy(query, [req.params.id]);
-
+		//VERIFICACIÓN
+		let id = req.params.id;
+        let respuesta = await personaController.verPersonaId(id);
         if (respuesta.length == 0) {
             throw new Error("Esta persona no se encuentra registrada");
         }
-
-		//chequeo en 'libros' para ver si la persona esta en uso
-		query = "SELECT * FROM libros WHERE id_persona = ?";
-		respuesta = await qy(query, [req.params.id]);
-
+		//CHEQUEO EN LIBROS
+		respuesta = await personaController.chequeoLibrosPersona(id);
 		if (respuesta.length > 0) {
 			throw new Error(
 				"Esta persona tiene libros asociados, no se puede eliminar"
 			);
 		}
-		//Si no tiene asociaciones con otras tablas procedo a borrar ID
-		query = "DELETE FROM personas WHERE id_persona = ?";
-		respuesta = await qy(query, [req.params.id]);
-
+		//BORRAR
+		respuesta = await personaController.borrarPersona(id);
 		res.status(200).send({
 			respuesta: "Se borro correctamente",
 		});
@@ -473,7 +436,6 @@ app.delete("/persona/:id", async (req, res) => {
 		});
 	}
 });
-
 
 //LIBRO----------------------------------------------------------
 
