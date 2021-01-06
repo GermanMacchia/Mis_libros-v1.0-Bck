@@ -1,8 +1,8 @@
+.gitignore
 package-lock.json
 package.json
 Consignas.txt
 Integrantes.txt
 node_modules
-.gitignore
 Esquema_MySql.jpg
 mislibros.sql

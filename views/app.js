@@ -10,6 +10,8 @@ const unless = require('express-unless');
 const bcrypt = require('bcrypt');
 const categoriaController = require('../controllers/categoriaController.js');
 const personaController = require('../controllers/personaController.js');
+const libroController = require('../controllers/libroController.js');
+const usuarioController = require('../controllers/usuarioController.js');
 
 // Declaración del paquete express en aplicación-----------------
 
@@ -19,16 +21,6 @@ const app = express();
 
 app.use(express.json()); 		   //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
-
-
-
-// a partir del Util de express 'promisify' nos permite crear async/await en la conexion MySql
-
-
-/* ¿Por qué? Porque Async/await solo puede ubicarse en el lugar de 
-	las PROMESAS, NO SOBRE CALLBACK´s. Entonces lo que hace es transformar
-	en promesa la callback del pedido de query */
-
 
 // Establecer puerto  -------------------------------------------
 
@@ -114,49 +106,30 @@ app.post('/login', async (req, res) => {
 			})
 			return;
 		}
-
-		// Paso 1 ENCUENTRO EL USUARIO EN LA BASE DE DATOS *************
-
-		// Chequeo si el usuario esta en mi base de datos
-		let query = 'SELECT * from usuarios WHERE nombre_usuario = ?';
-		let respuesta = await qy(query, req.body.user);
-
+		let usuario = req.body.user;
+		let pass = req.body.pass;
+		// VERIFICO USUARIO *************
+		let respuesta = await usuarioController.nombreUsuario(usuario);
 		if (respuesta.length == 0) { // Si no me arroja ningun resultado entonces el query esta vacio
 			throw new Error('El nombre de usuario no esta registrado')
 		}
-
-		// Paso 2 VERIFICO LA CLAVE ************************************
-
-		// Consulto la clave encriptada de la base de datos
-		query = 'SELECT clave_encriptada FROM usuarios WHERE nombre_usuario = ?';
-		respuesta = await qy(query, req.body.user);
-
-		let passverify = bcrypt.compareSync(req.body.pass, respuesta[0].clave_encriptada)
-
+		// VERIFICO CLAVE ***************
+		respuesta = await usuarioController.claveUsuario(usuario);
+		let passverify = bcrypt.compareSync(pass, respuesta[0].clave_encriptada)
 		if(passverify == false){
 			throw new Error('Contraseña incorrecta')
 		};
-		
-		// Paso 3 SESION **********************************************
-
-		query = 'SELECT  email_usuario FROM usuarios WHERE nombre_usuario = ?';
-		let email = await qy(query, req.body.user);
-
-		query = 'SELECT usuario_id  FROM usuarios WHERE nombre_usuario = ?';
-		let id = await qy(query, req.body.user);
-
-
+		//INICIO SESION *********************
+		let email = await usuarioController.emailUsuario(usuario);
+		let id = await usuarioController.idUsuario(usuario);
 		const tokenData = {
 			nombre: req.body.user,
 			email: email,
 			user_id: id
-		}
-
-		// Se utiliza una palabra determinada para codificar el token
-		const token = jwt.sign(tokenData, 'Secret', {
+		}	
+		const token = jwt.sign(tokenData, 'Secret', { // Se utiliza una palabra determinada para codificar el token
 			expiresIn: 60 * 60 * 24 // en este caso, expira en 24hs
 		})
-
 		res.send({
 			token
 		});
@@ -417,7 +390,7 @@ app.delete("/persona/:id", async (req, res) => {
         if (respuesta.length == 0) {
             throw new Error("Esta persona no se encuentra registrada");
         }
-		//CHEQUEO EN LIBROS
+		//CHEQUEO EN LIBROS **********
 		respuesta = await personaController.chequeoLibrosPersona(id);
 		if (respuesta.length > 0) {
 			throw new Error(
@@ -454,45 +427,28 @@ app.post('/libro', async (req, res) => {
 		if (!req.body.nombre_libro || !req.body.descripcion_libro || !req.body.id_categoria) {
 			throw new Error('Nombre y Categoría son datos obligatorios');
 		}
-
-		const nombre = req.body.nombre_libro.toUpperCase();
-
-		//Verifico que no exista previamente el libro
-		let query = 'SELECT nombre_libro FROM libros WHERE nombre_libro = ?';
-		let respuesta = await qy(query, [nombre]);
-
+		//STANDARIZACIÓN 
+		let nombre = req.body.nombre_libro.toUpperCase();
+		let idCategoria = req.body.id_categoria;
+		let descripcion = req.body.descripcion_libro;
+		//VERIFICACIÓN NOMBRE
+		let respuesta = await libroController.verificarLibro(nombre);
 		if (respuesta.length > 0) {
 			throw new Error('Ese libro ya existe')
 		}
-
-		//Verifico que exista previamente esa categoria
-		query = 'SELECT id_categoria FROM genero WHERE id_categoria = ?';
-		respuesta = await qy(query, [req.body.id_categoria]);
-
+		//VERIFICACIÓN CATEGORIA
+		respuesta = await categoriaController.verificarCategoriaID(idCategoria);
 		if (respuesta.length == 0) {
 			throw new Error('No existe la categoria indicada')
 		}
-
-		if (req.body.id_persona != null) {
-			//Verifico que exista previamente la persona
-			query = 'SELECT id_persona FROM personas WHERE id_persona = ?';
-			respuesta = await qy(query, [req.body.id_persona]);
-
-			if (respuesta.length == 0) {
-				throw new Error('No existe la persona indicada')
-			}
-		}
-
-		//Guardo el nuevo libro
-		query = 'INSERT INTO libros (nombre_libro, descripcion_libro, id_categoria, id_persona) VALUE (?,?,?,?)';
-		respuesta = await qy(query, [nombre, req.body.descripcion_libro, req.body.id_categoria, req.body.id_persona]);
-
+		//INSERCION
+		respuesta = await libroController.guardarLibro([nombre, descripcion, idCategoria]);
+		console.log(respuesta);
 		res.status(200).send({
-			Id: respuesta.insertId,
 			Nombre: nombre,
-			Descripcion: req.body.descripcion_libro,
-			Categoria: req.body.id_categoria,
-			Persona: req.body.id_persona
+			Descripcion: descripcion,
+			Categoria: idCategoria,
+			id_libro: respuesta.insertId
 		});
 	} catch (e) {
 		console.log(e.message);

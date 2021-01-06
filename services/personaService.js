@@ -1,4 +1,4 @@
-const personaModel = require('../models/persona.js')
+const personaModel = require('../models/persona.js');
 
 module.exports = {
 	verificarEmPersona: async (email) => {
