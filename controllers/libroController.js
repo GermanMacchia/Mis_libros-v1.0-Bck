@@ -5,6 +5,10 @@ module.exports = {
 		var verificarLibro= await libroService.verificarLibros(nombre);
 		return verificarLibro;
 	},
+	verificarLibroId: async (id) => {
+		var verificarLibroId= await libroService.verificarLibrosId(id);
+		return verificarLibroId;
+	},
 	verificacionCategoria: async (idCategoria) => {
 		var verificacionCategoria= await libroService.verificarCategoriaId(idCategoria);
 		return verificacionCategoria;

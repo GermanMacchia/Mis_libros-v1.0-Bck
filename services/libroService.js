@@ -5,6 +5,10 @@ module.exports = {
 		var verificarLibros = await libroModel.bookVerify(nombre);
 		return verificarLibros;
 	},
+	verificarLibrosId: async (id) => {
+		var verificarLibrosId = await libroModel.bookVerifyId(id);
+		return verificarLibrosId;
+	},
 	verificarCategoriaId: async (idCategoria) => {
 		var verificarCategoriaId = await libroModel.categoryVerify(idCategoria);
 		return vverificarCategoriaId;

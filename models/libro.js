@@ -6,6 +6,11 @@ module.exports = {
 			'SELECT nombre_libro FROM libros WHERE nombre_libro = ?', [nombre]);
 		return respuesta;
 	},
+	bookVerifyId: async (id) => {
+		var respuesta = await conexion.query(
+			'SELECT * FROM libros WHERE id_libro = ?', [id]);
+		return respuesta;
+	},
 	categoryVerify: async (idCategoria) => {
 		var respuesta = await conexion.query(
 			'SELECT id_categoria FROM genero WHERE id_categoria = ?', [idCategoria]);

@@ -472,14 +472,11 @@ categoria_id:numero, persona_id:numero/null} y status 413, {mensaje:
 
 app.get('/libro/:id', async (req, res) => {
 	try {
-
-		const query = 'SELECT * FROM libros WHERE id_libro = ?';
-		const respuesta = await qy(query, [req.params.id]);
+		let respuesta = await libroController.verificarLibroId(req.params.id);
 
 		if (respuesta.length == 0) {
 			throw new Error('No se encuentra ese libro');
 		}
-
 		res.status(200).send({
 			respuesta: respuesta
 		});
