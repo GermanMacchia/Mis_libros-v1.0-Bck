@@ -2,10 +2,10 @@
 
 // Pedidos de paquetes ------------------------------------------
 const express = require('express');
-const util = require('util');
 const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 const categoriaController = require('../controllers/categoriaController.js');
 const personaController = require('../controllers/personaController.js');
 const libroController = require('../controllers/libroController.js');
@@ -17,6 +17,7 @@ const app = express();
 // Llamada del middleware especifico del paquete-----------------
 app.use(express.json()); //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
+app.use(cors());
 
 // Establecer puerto  -------------------------------------------
 const port = process.env.PORT ? process.env.PORT : 3000;
@@ -474,14 +475,11 @@ categoria_id:numero, persona_id:numero/null} y status 413, {mensaje:
 
 app.get('/libro/:id', async(req, res) => {
     try {
-
-        const query = 'SELECT * FROM libros WHERE id_libro = ?';
-        const respuesta = await qy(query, [req.params.id]);
+        let respuesta = await libroController.verificarLibroId(req.params.id);
 
         if (respuesta.length == 0) {
             throw new Error('No se encuentra ese libro');
         }
-
         res.status(200).send({
             respuesta: respuesta
         });
@@ -508,30 +506,29 @@ app.put('/libro/:id', async(req, res) => {
         }
         const nombre = req.body.nombre_libro.toUpperCase();
         const descripcion = req.body.descripcion_libro.toUpperCase();
-        // verifico si existe el libro
-        let query = 'SELECT * FROM libros WHERE id_libro = ?'
-        let respuesta = await qy(query, [req.params.id]);
+
+        //VERIFICACIÓN LIBRO id
+        let respuesta = await libroController.verificarLibroId(req.params.id);
         if (respuesta.length == 0) {
-            throw new Error("No existe ese libro");
+            throw new Error('Ese libro no existe')
         }
-        // verifico que la categoria existe
-        query = 'SELECT * FROM genero WHERE id_categoria = ?'
-        respuesta = await qy(query, [req.body.id_categoria]);
+        //VERIFICACIÓN CATEGORIA
+        respuesta = await categoriaController.verificarCategoriaID(req.body.id_categoria);
         if (respuesta.length == 0) {
-            throw new Error("No existe la categoria seleccionada");
+            throw new Error('No existe la categoria indicada')
         }
-        // verifico que la persona existe en caso de que no tenga valor Null
+
+        // VERIFICACIÓN PERSONA
         if (req.body.id_persona != null) {
-            query = 'SELECT nombre_persona FROM personas WHERE id_persona = ?';
-            respuesta = await qy(query, [req.body.id_persona]);
-            if (respuesta.length < 1) {
-                throw new Error("No existe esa persona");
+            let respuesta = await personaController.verPersonaId(req.body.id_persona);
+            if (respuesta.length == 0) {
+                throw new Error('No se encuentra esa persona');
             }
         }
-        // Update
-        query = 'UPDATE libros SET nombre_libro = ?, descripcion_libro = ?, id_categoria = ?, id_persona = ? WHERE id_libro = ?';
-        respuesta = await qy(query, [nombre, descripcion, req.body.id_categoria, req.body.id_persona, req.params.id]);
 
+        //INSERCION
+        respuesta = await libroController.actualizarLibro([nombre, descripcion, req.body.id_categoria, req.body.id_persona, req.params.id]);
+        console.log(respuesta);
         res.status(200).send({
             'id': req.params.id,
             'nombre': nombre,
@@ -560,29 +557,26 @@ prestado, no se puede prestar hasta que no se devuelva", "no se encontro el libr
 app.put('/libro/prestar/:id', async(req, res) => {
     try {
 
-        // verifico si existe el libro
-        let query = 'SELECT * FROM libros WHERE id_libro = ?'
-        let respuesta = await qy(query, [req.params.id]);
+        //VERIFICACIÓN LIBRO id
+        let respuesta = await libroController.verificarLibroId(req.params.id);
         if (respuesta.length == 0) {
-            throw new Error("No existe ese libro");
+            throw new Error('Ese libro no existe')
         }
-
-        // verifico si el libro ya no fue prestado
+        // verifico si el libro ya fue prestado
         const idPersona = respuesta[0].id_persona;
         if (idPersona != null) {
             throw new Error("El libro ya fue prestado");
         }
 
-        // Verifico que la persona existe
-        query = 'SELECT * FROM personas WHERE id_persona = ?';
-        respuesta = await qy(query, [req.body.id_persona]);
-        if (respuesta.length == 0) {
-            throw new Error("No se encontro la persona a la que se quiere prestar el libro");
+        // VERIFICACIÓN PERSONA
+        if (req.body.id_persona != null) {
+            let respuesta = await personaController.verPersonaId(req.body.id_persona);
+            if (respuesta.length == 0) {
+                throw new Error('No se encuentra esa persona');
+            }
         }
 
-        // Update
-        query = 'UPDATE libros SET id_persona = ? WHERE id_libro = ?';
-        respuesta = await qy(query, [req.body.id_persona, req.params.id]);
+        respuesta = await libroController.prestarLibro([req.body.id_persona, req.params.id]);
 
         res.status(200).send({
             "respuesta": "El libro se presto correctamente"
@@ -605,22 +599,18 @@ correctamente"} o bien status 413, {mensaje: <descripcion del error>}
 
 app.put('/libro/devolver/:id', async(req, res) => {
     try {
-        // verifico si existe el libro
-        let query = 'SELECT * FROM libros WHERE id_libro = ?'
-        let respuesta = await qy(query, [req.params.id]);
+        //VERIFICACIÓN LIBRO id
+        let respuesta = await libroController.verificarLibroId(req.params.id);
         if (respuesta.length == 0) {
-            throw new Error("No existe ese libro");
+            throw new Error('Ese libro no existe')
         }
-
-        // verifico si el libro no fue prestado
+        // verifico si el libro ya fue prestado
         const idPersona = respuesta[0].id_persona;
         if (idPersona == null) {
             throw new Error("El libro no esta prestado");
         }
 
-        // Update
-        query = 'UPDATE libros SET id_persona = ? WHERE id_libro = ?';
-        respuesta = await qy(query, [null, req.params.id]);
+        respuesta = await libroController.prestarLibro([null, req.params.id]);
 
         res.status(200).send({
             "respuesta": "El libro fue devuelto correctamente"
@@ -644,14 +634,10 @@ se puede borrar" */
 
 app.delete("/libro/:id", async(req, res) => {
     try {
-        //chequeo en 'libros' para ver si el libro existe
-        let query = "SELECT * FROM libros WHERE id_libro = ?";
-        let respuesta = await qy(query, [req.params.id]);
-
+        //VERIFICACIÓN LIBRO id
+        let respuesta = await libroController.verificarLibroId(req.params.id);
         if (respuesta.length == 0) {
-            throw new Error(
-                "No se encuentra ese libro"
-            );
+            throw new Error('Ese libro no existe')
         }
 
         if (respuesta[0].id_persona != null) {
@@ -661,12 +647,12 @@ app.delete("/libro/:id", async(req, res) => {
         }
 
         //Si cumple con todas las condiciones procedo a borrar ID
-        query = "DELETE FROM libros WHERE id_libro = ?";
-        respuesta = await qy(query, [req.params.id]);
+        respuesta = await libroController.borrarLibro([req.params.id]);
 
         res.status(200).send({
             respuesta: "Se borro correctamente",
         });
+
     } catch (e) {
         console.error(e.message);
         res.status(413).send({
