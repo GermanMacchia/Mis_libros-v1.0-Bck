@@ -10,7 +10,7 @@ const categoriaController = require('../controllers/categoriaController.js');
 const personaController = require('../controllers/personaController.js');
 const libroController = require('../controllers/libroController.js');
 const usuarioController = require('../controllers/usuarioController.js');
-
+const trim = require('./funcionConEspacios.js');
 // Declaración del paquete express en aplicación-----------------
 const app = express();
 
@@ -45,7 +45,7 @@ const auth = (req, res, next) => {
     }
 };
 
-// Unless ---------------------------------------------------....
+// Unless ---------------------------------------------------
 auth.unless = unless;
 app.use(auth.unless({
     path: [{
@@ -56,6 +56,8 @@ app.use(auth.unless({
         methods: ['POST']
     }]
 }));
+
+//funcion para evitar campos vacios --------------------------
 
 // 1. Registración <<<<<<<<<<<<<<<<<< 
 app.post('/registro', async(req, res) => {
@@ -91,22 +93,20 @@ app.post('/login', async(req, res) => {
             })
             return;
         }
-        let usuario = req.body.user;
-        let pass = req.body.pass;
         // VERIFICO USUARIO *************
-        let respuesta = await usuarioController.nombreUsuario(usuario);
+        let respuesta = await usuarioController.nombreUsuario(req.body.user);
         if (respuesta.length == 0) { // Si no me arroja ningun resultado entonces el query esta vacio
             throw new Error('El nombre de usuario no esta registrado')
         }
         // VERIFICO CLAVE ***************
-        respuesta = await usuarioController.claveUsuario(usuario);
-        let passverify = bcrypt.compareSync(pass, respuesta[0].clave_encriptada)
+        respuesta = await usuarioController.claveUsuario(req.body.user);
+        let passverify = bcrypt.compareSync(req.body.pass, respuesta[0].clave_encriptada)
         if (passverify == false) {
             throw new Error('Contraseña incorrecta')
         };
         //INICIO SESION *********************
-        let email = await usuarioController.emailUsuario(usuario);
-        let id = await usuarioController.idUsuario(usuario);
+        let email = await usuarioController.emailUsuario(req.body.user);
+        let id = await usuarioController.idUsuario(req.body.user);
         const tokenData = {
             nombre: req.body.user,
             email: email,
@@ -125,7 +125,6 @@ app.post('/login', async(req, res) => {
         })
     }
 });
-
 
 // Desarrollo de la lógica en la API //////////////////////////////////
 
@@ -146,6 +145,10 @@ app.post('/categoria', async(req, res) => {
         if (!req.body.nombre_categoria) {
             throw new Error('Falta enviar el nombre');
         }
+        if (await trim.conEspacios(req.body.nombre_categoria)) {
+			throw new Error('Los campos requeridos no pueden permanecer con espacios vacios');
+			//Si no hay contenido en JSON "nombre" en el body tira error
+		}
         //STANDARIZACIÓN
         let nombre = req.body.nombre_categoria.toUpperCase();
         //VERIFICACIÓN
@@ -257,6 +260,11 @@ app.post('/persona', async(req, res) => {
         if (!req.body.email_persona || !req.body.apellido_persona || !req.body.nombre_persona) {
             throw new Error('Faltan datos'); // alias permite null
         }
+        if (await trim.conEspacios(req.body.email_persona)||
+        	await trim.conEspacios(req.body.apellido_persona)||
+        	await trim.conEspacios(req.body.nombre_persona)) {
+			throw new Error('Los campos requeridos no pueden permanecer con espacios vacios');
+		}
         //STANDARIZACIÓN
         const email = req.body.email_persona.toUpperCase();
         const apellido = req.body.apellido_persona.toUpperCase();
@@ -341,6 +349,11 @@ persona" */
 app.put('/persona/:id', async(req, res) => {
     try {
         let id = req.params.id;
+        if (await trim.conEspacios(req.body.email_persona)||
+        	await trim.conEspacios(req.body.apellido_persona)||
+        	await trim.conEspacios(req.body.nombre_persona)) {
+			throw new Error('Los campos requeridos no pueden permanecer vacios');
+		}
         //STANDARIZACIÓN
         let email = req.body.email_persona.toUpperCase();
         let apellido = req.body.apellido_persona.toUpperCase();
@@ -415,6 +428,11 @@ app.post('/libro', async(req, res) => {
         if (!req.body.nombre_libro || !req.body.descripcion_libro || !req.body.id_categoria) {
             throw new Error('Nombre y Categoría son datos obligatorios');
         }
+        if (await trim.conEspacios(req.body.nombre_libro)||
+        	await trim.conEspacios(req.body.descripcion_libro)||
+        	await trim.conEspacios(req.body.id_categoria)) {
+			throw new Error('Los campos requeridos no pueden permanecer vacios');
+		}
         //STANDARIZACIÓN 
         let nombre = req.body.nombre_libro.toUpperCase();
         let idCategoria = req.body.id_categoria;
@@ -504,6 +522,11 @@ app.put('/libro/:id', async(req, res) => {
         if (!req.body.nombre_libro || !req.body.descripcion_libro || !req.body.id_categoria) {
             throw new Error('No se enviaron los datos necesarios para hacer un update');
         }
+        if (await trim.conEspacios(req.body.nombre_libro)||
+        	await trim.conEspacios(req.body.descripcion_libro)||
+        	await trim.conEspacios(req.body.id_categoria)) {
+			throw new Error('Los campos requeridos no pueden permanecer vacios');
+		}
         const nombre = req.body.nombre_libro.toUpperCase();
         const descripcion = req.body.descripcion_libro.toUpperCase();
 
@@ -533,8 +556,8 @@ app.put('/libro/:id', async(req, res) => {
             'id': req.params.id,
             'nombre': nombre,
             'descripcion': descripcion,
-            'categoria': req.body.id_categoria,
-            'persona': req.body.id_persona
+            'categoria_id': req.body.id_categoria,
+            'persona_id': req.body.id_persona
         });
 
     } catch (e) {
@@ -567,7 +590,9 @@ app.put('/libro/prestar/:id', async(req, res) => {
         if (idPersona != null) {
             throw new Error("El libro ya fue prestado");
         }
-
+        if (await trim.conEspacios(req.body.id_persona)){
+			throw new Error('Los campos requeridos no pueden permanecer vacios');
+		}
         // VERIFICACIÓN PERSONA
         if (req.body.id_persona != null) {
             let respuesta = await personaController.verPersonaId(req.body.id_persona);
@@ -622,7 +647,6 @@ app.put('/libro/devolver/:id', async(req, res) => {
             "Error": e.message
         });
     }
-
 });
 
 /* 16 - Delete ID 

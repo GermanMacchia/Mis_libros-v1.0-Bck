@@ -5,19 +5,19 @@ module.exports = {
 		var resultado = await categoriaModel.saveCategory(nombre);
 		return resultado;
 	},
-	verificarCategoria: async(nombre) => {
+	verificarCategoria: async (nombre) => {
 		var resultado = await categoriaModel.checkCategory(nombre);
 		return resultado;
 	},
-	verificarCategoriaId: async(id) => {
+	verificarCategoriaId: async (id) => {
 		var resultado = await categoriaModel.checkCategoryId(id);
 		return resultado;
 	},
-	mostrarCategorias: async() => {
+	mostrarCategorias: async () => {
 		var resultado = await categoriaModel.listCategories();
 		return resultado;
 	},
-	verCategoriaID: async(id) => {
+	verCategoriaID: async (id) => {
 		var resultado = await categoriaModel.idCategory(id);
 		return resultado;
 	},
@@ -25,7 +25,7 @@ module.exports = {
 		var resultado = await categoriaModel.checkBooksCategory(id);
 		return resultado;
 	},
-	borrarCategoriaID: async(id) => {
+	borrarCategoriaID: async (id) => {
 		var resultado = await categoriaModel.deleteCategory(id);
 		return resultado;
 	}
