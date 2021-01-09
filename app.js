@@ -7,7 +7,9 @@ const mysql = require('mysql');
 const util = require('util');
 const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const cors = require('cors');
+const trim = require('./funcionConEspacios.js');
 
 // Declaración del paquete express en aplicación-----------------
 
@@ -17,6 +19,7 @@ const app = express();
 
 app.use(express.json()); 		   //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
+app.use(cors());
 
 // Conexion con MySql ---------------------------------------
 
@@ -203,8 +206,8 @@ app.post('/categoria', async (req, res) => { //Se espera la respuesta antes de s
 			//Si no hay declaración de JSON "nombre" en el body tira error
 		}
 
-		if (conEspacios(req.body.nombre)){
-			throw new Error('Falta enviar el nombre con contenido');
+		if (await trim.conEspacios(req.body.nombre)) {
+			throw new Error('Los campos requeridos no pueden permanecer con espacios vacios');
 			//Si no hay contenido en JSON "nombre" en el body tira error
 		}
 		//Declaración de variable con funcion para estandarizarla en mayusculas
@@ -340,17 +343,10 @@ app.post('/persona', async (req, res) => {
 			//Si no hay declaraciones JSON en el body tira error (alias_persona puede permanecer NULL)
 		}
 
-		if (conEspacios(req.body.nombre)){
-			throw new Error('Falta enviar el nombre con contenido');
-			//Si no hay contenido en JSON "nombre" en el body tira error
-		}
-		if (conEspacios(req.body.email)){
-			throw new Error('Falta enviar el email con contenido');
-			//Si no hay contenido en JSON "email" en el body tira error
-		}
-		if (conEspacios(req.body.apellido)){
-			throw new Error('Falta enviar el apellido con contenido');
-			//Si no hay contenido en JSON "apellido" en el body tira error
+		if (await trim.conEspacios(req.body.email)||
+				await trim.conEspacios(req.body.apellido)||
+				await trim.conEspacios(req.body.nombre)) {
+					throw new Error('Los campos requeridos no pueden permanecer con espacios vacios');
 		}
 
 		//Declaracion de variables y standarizacion de datos
@@ -453,17 +449,10 @@ app.put('/persona/:id', async (req, res) => {
 			//Si no hay declaraciones JSON en el body tira error (alias_persona puede permanecer NULL)
 		}
 
-		if (conEspacios(req.body.nombre)){
-			throw new Error('Falta enviar el nombre con contenido');
-			//Si no hay contenido en JSON "nombre" en el body tira error
-		}
-		if (conEspacios(req.body.email)){
-			throw new Error('Falta enviar el email con contenido');
-			//Si no hay contenido en JSON "email" en el body tira error
-		}
-		if (conEspacios(req.body.apellido)){
-			throw new Error('Falta enviar el apellido con contenido');
-			//Si no hay contenido en JSON "apellido" en el body tira error
+		if (await trim.conEspacios(req.body.email)||
+				await trim.conEspacios(req.body.apellido)||
+				await trim.conEspacios(req.body.nombre)) {
+					throw new Error('Los campos requeridos no pueden permanecer vacios');
 		}
 
 		//Declaracion e inicializacion de variables con standarizacion de datos con función uppercase
@@ -562,9 +551,8 @@ app.post('/libro', async (req, res) => {
 			throw new Error('Nombre y Categoría son datos obligatorios');
 		}
 
-		if (conEspacios(req.body.nombre)){
-			throw new Error('Falta enviar el nombre con contenido');
-			//Si no hay contenido en JSON "nombre" en el body tira error
+		if (await trim.conEspacios(req.body.nombre)){
+			throw new Error('Los campos requeridos no pueden permanecer vacios');
 		}
 
 		const nombre = req.body.nombre.toUpperCase();
@@ -845,12 +833,3 @@ app.delete("/libro/:id", async (req, res) => {
 		});
 	}
 });
-
-function conEspacios(campo){
-
-	if(campo.trim().length == 0){
-		return true;
-	}else{
-		return false;
-	}
-}
