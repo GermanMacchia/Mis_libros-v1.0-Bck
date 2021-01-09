@@ -427,17 +427,17 @@ obligatorios", "no existe la categoria indicada", "no existe la persona indicada
 app.post('/libro', async(req, res) => {
     try {
         //Validación de envio correcto de informacion
-        if (!req.body.nombre || !req.body.descripcion || !req.body.id) {
+        if (!req.body.nombre || !req.body.descripcion || !req.body.categoria_id) {
             throw new Error('Nombre y Categoría son datos obligatorios');
         }
         if (await trim.conEspacios(req.body.nombre)||
         	await trim.conEspacios(req.body.descripcion)||
-        	await trim.conEspacios(req.body.id)) {
+        	await trim.conEspacios(req.body.categoria_id)) {
 			throw new Error('Los campos requeridos no pueden permanecer vacios');
 		}
         //STANDARIZACIÓN 
         let nombre = req.body.nombre.toUpperCase();
-        let idCategoria = req.body.id;
+        let idCategoria = req.body.categoria_id;
         let descripcion = req.body.descripcion;
         //VERIFICACIÓN NOMBRE
         let respuesta = await libroController.verificarLibro(nombre);
@@ -454,10 +454,10 @@ app.post('/libro', async(req, res) => {
         console.log(respuesta);
         res.status(200).send({
             Nombre: nombre,
-            Descripcion: descripcion,
-            Categoria: idCategoria,
             id_libro: respuesta.insertId,
-            id_persona: null
+            Descripcion: descripcion,
+            Categoria_id: idCategoria,
+            persona_id: null
         });
     } catch (e) {
         console.log(e.message);
@@ -553,14 +553,14 @@ app.put('/libro/:id', async(req, res) => {
         }
 
         //INSERCION
-        respuesta = await libroController.actualizarLibro([nombre, descripcion, req.body.id_categoria, req.body.id_persona, req.params.id]);
-        console.log(respuesta);
+        let update = await libroController.actualizarLibro([nombre, descripcion, req.body.categoria_id, req.body.persona_id, req.params.id]);
+        respuesta = await libroController.verificarLibroId(req.params.id);
         res.status(200).send({
-            'id': respuesta.id,
-            'nombre': respuesta.nombre,
-            'descripcion': respuesta.descripcion,
-            'categoria_id': respuesta.categoria_id,
-            'persona_id': respuesta.persona_id
+            'id': respuesta[0].id,
+            'nombre': respuesta[0].nombre,
+            'descripcion': respuesta[0].descripcion,
+            'categoria_id': respuesta[0].categoria_id,
+            'persona_id': respuesta[0].persona_id
         });
 
     } catch (e) {
@@ -570,7 +570,7 @@ app.put('/libro/:id', async(req, res) => {
         });
     }
 
-});
+})
 
 /* 14 - Put prestar ID <<<<<<<<<<<<<<<<<<<
 

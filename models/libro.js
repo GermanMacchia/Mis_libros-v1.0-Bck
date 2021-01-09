@@ -18,7 +18,7 @@ module.exports = {
     },
     saveNewBook: async ([nombre, descripcion, idCategoria]) => {
         var respuesta = await conexion.query(
-            'INSERT INTO libros (nombre, descripcion, id) VALUE (?,?,?)', [nombre, descripcion, idCategoria]);
+            'INSERT INTO libros (nombre, descripcion, categoria_id) VALUE (?,?,?)', [nombre, descripcion, idCategoria]);
         return respuesta;
     },
     seeListBooks: async () => {
@@ -32,7 +32,7 @@ module.exports = {
         return respuesta;
     },
     lendsBooks: async ([idPersona, id]) => {
-        query = 'UPDATE libros SET id = ? WHERE id = ?';
+        let query = 'UPDATE libros SET persona_id = ? WHERE id = ?';
         respuesta = await conexion.query(query, [idPersona, id]);
         return respuesta;
     },
