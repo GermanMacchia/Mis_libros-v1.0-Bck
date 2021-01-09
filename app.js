@@ -597,7 +597,7 @@ app.put('/libro/prestar/:id', async(req, res) => {
 			throw new Error('Los campos requeridos no pueden permanecer vacios');
 		}
         // VERIFICACIÓN PERSONA
-        if (req.body.id_persona != null) {
+        if (req.body.persona_id != null) {
             let respuesta = await personaController.verPersonaId(req.body.persona_id);
             if (respuesta.length == 0) {
                 throw new Error('No se encuentra esa persona');
