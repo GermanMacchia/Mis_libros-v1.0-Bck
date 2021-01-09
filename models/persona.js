@@ -33,7 +33,7 @@ module.exports = {
 	},
 	bookPerson: async (id) => {
 		var respuesta = await conexion.query(
-			"SELECT * FROM libros WHERE id = ?", [id]);
+			"SELECT * FROM libros WHERE persona_id = ?", [id]);
 		return respuesta;
 	},
 	deletePerson: async (id) => {
