@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generaci√≥n: 02-01-2021 a las 03:05:24
--- Versi√≥n del servidor: 10.4.16-MariaDB
--- Versi√≥n de PHP: 7.4.12
+-- Tiempo de generaciÛn: 02-01-2021 a las 03:05:24
+-- VersiÛn del servidor: 10.4.16-MariaDB
+-- VersiÛn de PHP: 7.4.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,19 +24,19 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `genero`
+-- Estructura de tabla para la tabla `categorias`
 --
 
-CREATE TABLE `genero` (
-  `id_categoria` int(10) NOT NULL,
-  `nombre_categoria` varchar(50) NOT NULL
+CREATE TABLE `categorias` (
+  `id` int(10) NOT NULL,
+  `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Volcado de datos para la tabla `genero`
+-- Volcado de datos para la tabla `categorias`
 --
 
-INSERT INTO `genero` (`id_categoria`, `nombre_categoria`) VALUES
+INSERT INTO `categorias` (`id`, `nombre`) VALUES
 (2, 'FANTASIA'),
 (1, 'TERROR');
 
@@ -47,18 +47,18 @@ INSERT INTO `genero` (`id_categoria`, `nombre_categoria`) VALUES
 --
 
 CREATE TABLE `libros` (
-  `id_libro` int(10) NOT NULL,
-  `nombre_libro` varchar(50) NOT NULL,
-  `descripcion_libro` varchar(200) NOT NULL,
-  `id_categoria` int(10) NOT NULL,
-  `id_persona` int(10) DEFAULT NULL
+  `id` int(10) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `descripcion` varchar(200) NOT NULL,
+  `categoria_id` int(10) NOT NULL,
+  `persona_id` int(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Volcado de datos para la tabla `libros`
 --
 
-INSERT INTO `libros` (`id_libro`, `nombre_libro`, `descripcion_libro`, `id_categoria`, `id_persona`) VALUES
+INSERT INTO `libros` (`id`, `nombre`, `descripcion`, `categoria_id`, `persona_id`) VALUES
 (1, 'CONFESSIONS', 'UNA HISTORIA DE VENGANZA', 1, 1),
 (2, 'EL ELFO OSCURO', 'LAS AVENTURAS DEL DROW MAS POPULAR DE LOS REINOS OLVIDADOS', 2, NULL),
 (3, 'HARRY POTTER', 'Harry se entera que es un mago', 2, NULL);
@@ -70,18 +70,18 @@ INSERT INTO `libros` (`id_libro`, `nombre_libro`, `descripcion_libro`, `id_categ
 --
 
 CREATE TABLE `personas` (
-  `id_persona` int(10) NOT NULL,
-  `nombre_persona` varchar(50) NOT NULL,
-  `apellido_persona` varchar(50) NOT NULL,
-  `email_persona` varchar(60) NOT NULL,
-  `alias_persona` varchar(50) NOT NULL
+  `id` int(10) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `apellido` varchar(50) NOT NULL,
+  `email` varchar(60) NOT NULL,
+  `alias` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Volcado de datos para la tabla `personas`
 --
 
-INSERT INTO `personas` (`id_persona`, `nombre_persona`, `apellido_persona`, `email_persona`, `alias_persona`) VALUES
+INSERT INTO `personas` (`id`, `nombre`, `apellido`, `email`, `alias`) VALUES
 (1, 'JOHN', 'DOE', 'JD@GMAIL.COM', 'NOBODY'),
 (2, 'NATALIA', 'NATALIA', 'NN@GMAIL.COM', 'NO TIENE');
 
@@ -92,44 +92,44 @@ INSERT INTO `personas` (`id_persona`, `nombre_persona`, `apellido_persona`, `ema
 --
 
 CREATE TABLE `usuarios` (
-  `usuario_id` int(11) NOT NULL,
-  `nombre_usuario` varchar(30) NOT NULL,
+  `id` int(11) NOT NULL,
+  `nombre` varchar(30) NOT NULL,
   `clave_encriptada` char(150) NOT NULL,
-  `email_usuario` varchar(30) NOT NULL,
-  `celu_usuario` varchar(30) NOT NULL
+  `email` varchar(30) NOT NULL,
+  `celu` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- √çndices para tablas volcadas
+-- Õndices para tablas volcadas
 --
 
 --
--- Indices de la tabla `genero`
+-- Indices de la tabla `categorias`
 --
-ALTER TABLE `genero`
-  ADD PRIMARY KEY (`id_categoria`),
-  ADD UNIQUE KEY `nombre_categoria` (`nombre_categoria`);
+ALTER TABLE `categorias`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
 -- Indices de la tabla `libros`
 --
 ALTER TABLE `libros`
-  ADD PRIMARY KEY (`id_libro`),
-  ADD KEY `id_categoria` (`id_categoria`),
-  ADD KEY `id_persona` (`id_persona`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `categoria_id` (`categoria_id`),
+  ADD KEY `persona_id` (`persona_id`);
 
 --
 -- Indices de la tabla `personas`
 --
 ALTER TABLE `personas`
-  ADD PRIMARY KEY (`id_persona`),
-  ADD UNIQUE KEY `email_persona` (`email_persona`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`usuario_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -138,26 +138,26 @@ ALTER TABLE `usuarios`
 --
 -- AUTO_INCREMENT de la tabla `genero`
 --
-ALTER TABLE `genero`
-  MODIFY `id_categoria` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `categorias`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `libros`
 --
 ALTER TABLE `libros`
-  MODIFY `id_libro` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `personas`
 --
 ALTER TABLE `personas`
-  MODIFY `id_persona` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `usuario_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas
@@ -167,8 +167,8 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `libros`
 --
 ALTER TABLE `libros`
-  ADD CONSTRAINT `libros_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `genero` (`id_categoria`),
-  ADD CONSTRAINT `libros_ibfk_2` FOREIGN KEY (`id_persona`) REFERENCES `personas` (`id_persona`);
+  ADD CONSTRAINT `libros_ibfk_1` FOREIGN KEY (`categoria_id`) REFERENCES `categorias` (`id`),
+  ADD CONSTRAINT `libros_ibfk_2` FOREIGN KEY (`persona_id`) REFERENCES `personas` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

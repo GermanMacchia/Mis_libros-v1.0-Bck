@@ -3,37 +3,37 @@ const conexion = require('../db.js');
 module.exports = {
 	saveCategory: async (nombre) => {
 		var respuesta = await conexion.query(
-			'INSERT INTO genero (nombre_categoria) VALUE (?)', [nombre]);
+			'INSERT INTO categorias (nombre) VALUE (?)', [nombre]);
 		return respuesta;
 	},
 	checkCategory: async (nombre) => {
 		var respuesta = await conexion.query(
-			'SELECT id_categoria FROM genero WHERE nombre_categoria = ?', [nombre]);
+			'SELECT id FROM categorias WHERE nombre = ?', [nombre]);
 		return respuesta;
 	},
 	checkCategoryId: async (id) => {
 		var respuesta = await conexion.query(
-			'SELECT * FROM genero WHERE id_categoria = ?', [id]);
+			'SELECT * FROM categorias WHERE id = ?', [id]);
 		return respuesta;
 	},
 	listCategories: async () => {
 		var respuesta = await conexion.query(
-			'SELECT * FROM genero');
+			'SELECT * FROM categorias');
 		return respuesta;
 	},
 	idCategory: async (id) => {
 		var respuesta = await conexion.query(
-			'SELECT * FROM genero WHERE id_categoria = ?', [id]);
+			'SELECT * FROM categorias WHERE id = ?', [id]);
 		return respuesta;
 	},
 	checkBooksCategory: async (id) => {
 		var respuesta = await conexion.query(
-			'SELECT * FROM libros WHERE id_categoria = ?', [id]);
+			'SELECT * FROM libros WHERE id = ?', [id]);
 		return respuesta;
 	},
 	deleteCategory: async (id) => {
 		var respuesta = await conexion.query(
-			'DELETE FROM genero WHERE id_categoria = ?', [id]);
+			'DELETE FROM categorias WHERE id = ?', [id]);
 		return respuesta;
 	}
 }
