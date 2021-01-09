@@ -10,7 +10,7 @@ const categoriaController = require('./controllers/categoriaController.js');
 const personaController = require('./controllers/personaController.js');
 const libroController = require('./controllers/libroController.js');
 const usuarioController = require('./controllers/usuarioController.js');
-const trim = require('./funcionConEspacios.js');
+const trim = require('./funcionConEspacios.js'); //funcion para evitar campos vacios 
 // Declaración del paquete express en aplicación-----------------
 const app = express();
 
@@ -56,8 +56,6 @@ app.use(auth.unless({
         methods: ['POST']
     }]
 }));
-
-//funcion para evitar campos vacios --------------------------
 
 // 1. Registración <<<<<<<<<<<<<<<<<< 
 app.post('/registro', async(req, res) => {
