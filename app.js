@@ -140,15 +140,15 @@ app.post('/categoria', async(req, res) => {
 
     try {
         //VALIDACIÓN
-        if (!req.body.nombre_categoria) {
+        if (!req.body.nombre) {
             throw new Error('Falta enviar el nombre');
         }
-        if (await trim.conEspacios(req.body.nombre_categoria)) {
+        if (await trim.conEspacios(req.body.nombre)) {
 			throw new Error('Los campos requeridos no pueden permanecer con espacios vacios');
 			//Si no hay contenido en JSON "nombre" en el body tira error
 		}
         //STANDARIZACIÓN
-        let nombre = req.body.nombre_categoria.toUpperCase();
+        let nombre = req.body.nombre.toUpperCase();
         //VERIFICACIÓN
         let respuesta = await categoriaController.verificarCategoria(nombre)
         if (respuesta.length > 0) {
@@ -256,19 +256,19 @@ apellido: string, alias: string, email: string} - status: 413,
 app.post('/persona', async(req, res) => {
     try {
         //VALIDACIÓN
-        if (!req.body.email_persona || !req.body.apellido_persona || !req.body.nombre_persona) {
+        if (!req.body.email || !req.body.apellido|| !req.body.nombre) {
             throw new Error('Faltan datos'); // alias permite null
         }
-        if (await trim.conEspacios(req.body.email_persona)||
-        	await trim.conEspacios(req.body.apellido_persona)||
-        	await trim.conEspacios(req.body.nombre_persona)) {
+        if (await trim.conEspacios(req.body.email)||
+        	await trim.conEspacios(req.body.apellido)||
+        	await trim.conEspacios(req.body.nombre)) {
 			throw new Error('Los campos requeridos no pueden permanecer con espacios vacios');
 		}
         //STANDARIZACIÓN
-        const email = req.body.email_persona.toUpperCase();
-        const apellido = req.body.apellido_persona.toUpperCase();
-        const nombre = req.body.nombre_persona.toUpperCase();
-        const alias = req.body.alias_persona.toUpperCase();
+        const email = req.body.email.toUpperCase();
+        const apellido = req.body.apellido.toUpperCase();
+        const nombre = req.body.nombre.toUpperCase();
+        const alias = req.body.alias.toUpperCase();
         //VERIFICACIÓN
         let respuesta = await personaController.verificarPersona(email);
         if (respuesta.length > 0) {
@@ -348,16 +348,16 @@ persona" */
 app.put('/persona/:id', async(req, res) => {
     try {
         let id = req.params.id;
-        if (await trim.conEspacios(req.body.email_persona)||
-        	await trim.conEspacios(req.body.apellido_persona)||
-        	await trim.conEspacios(req.body.nombre_persona)) {
+        if (await trim.conEspacios(req.body.email)||
+        	await trim.conEspacios(req.body.apellido)||
+        	await trim.conEspacios(req.body.nombre)) {
 			throw new Error('Los campos requeridos no pueden permanecer vacios');
 		}
         //STANDARIZACIÓN
-        let email = req.body.email_persona.toUpperCase();
-        let apellido = req.body.apellido_persona.toUpperCase();
-        let nombre = req.body.nombre_persona.toUpperCase();
-        let alias = req.body.alias_persona.toUpperCase();
+        let email = req.body.email.toUpperCase();
+        let apellido = req.body.apellido.toUpperCase();
+        let nombre = req.body.nombre.toUpperCase();
+        let alias = req.body.alias.toUpperCase();
         //VERIFICACIÓN
         let respuesta = await personaController.verificacionDoble([email, id]);
         if (respuesta.length < 1) {
@@ -427,18 +427,18 @@ obligatorios", "no existe la categoria indicada", "no existe la persona indicada
 app.post('/libro', async(req, res) => {
     try {
         //Validación de envio correcto de informacion
-        if (!req.body.nombre_libro || !req.body.descripcion_libro || !req.body.id_categoria) {
+        if (!req.body.nombre || !req.body.descripcion || !req.body.id) {
             throw new Error('Nombre y Categoría son datos obligatorios');
         }
-        if (await trim.conEspacios(req.body.nombre_libro)||
-        	await trim.conEspacios(req.body.descripcion_libro)||
-        	await trim.conEspacios(req.body.id_categoria)) {
+        if (await trim.conEspacios(req.body.nombre)||
+        	await trim.conEspacios(req.body.descripcion)||
+        	await trim.conEspacios(req.body.id)) {
 			throw new Error('Los campos requeridos no pueden permanecer vacios');
 		}
         //STANDARIZACIÓN 
-        let nombre = req.body.nombre_libro.toUpperCase();
-        let idCategoria = req.body.id_categoria;
-        let descripcion = req.body.descripcion_libro;
+        let nombre = req.body.nombre.toUpperCase();
+        let idCategoria = req.body.id;
+        let descripcion = req.body.descripcion;
         //VERIFICACIÓN NOMBRE
         let respuesta = await libroController.verificarLibro(nombre);
         if (respuesta.length > 0) {
@@ -522,16 +522,16 @@ app.get('/libro/:id', async(req, res) => {
 
 app.put('/libro/:id', async(req, res) => {
     try {
-        if (!req.body.nombre_libro || !req.body.descripcion_libro || !req.body.id_categoria) {
+        if (!req.body.nombre || !req.body.descripcion || !req.body.categoria_id) {
             throw new Error('No se enviaron los datos necesarios para hacer un update');
         }
-        if (await trim.conEspacios(req.body.nombre_libro)||
-        	await trim.conEspacios(req.body.descripcion_libro)||
-        	await trim.conEspacios(req.body.id_categoria)) {
+        if (await trim.conEspacios(req.body.nombre)||
+        	await trim.conEspacios(req.body.descripcion)||
+        	await trim.conEspacios(req.body.categoria_id)) {
 			throw new Error('Los campos requeridos no pueden permanecer vacios');
 		}
-        const nombre = req.body.nombre_libro.toUpperCase();
-        const descripcion = req.body.descripcion_libro.toUpperCase();
+        const nombre = req.body.nombre.toUpperCase();
+        const descripcion = req.body.descripcion.toUpperCase();
 
         //VERIFICACIÓN LIBRO id
         let respuesta = await libroController.verificarLibroId(req.params.id);
@@ -539,14 +539,14 @@ app.put('/libro/:id', async(req, res) => {
             throw new Error('Ese libro no existe')
         }
         //VERIFICACIÓN CATEGORIA
-        respuesta = await categoriaController.verificarCategoriaID(req.body.id_categoria);
+        respuesta = await categoriaController.verificarCategoriaID(req.body.categoria_id);
         if (respuesta.length == 0) {
             throw new Error('No existe la categoria indicada')
         }
 
         // VERIFICACIÓN PERSONA
-        if (req.body.id_persona != null) {
-            let respuesta = await personaController.verPersonaId(req.body.id_persona);
+        if (req.body.persona_id != null) {
+            let respuesta = await personaController.verPersonaId(req.body.persona_id);
             if (respuesta.length == 0) {
                 throw new Error('No se encuentra esa persona');
             }
@@ -556,11 +556,11 @@ app.put('/libro/:id', async(req, res) => {
         respuesta = await libroController.actualizarLibro([nombre, descripcion, req.body.id_categoria, req.body.id_persona, req.params.id]);
         console.log(respuesta);
         res.status(200).send({
-            'id': respuesta.id_libro,
-            'nombre': respuesta.nombre_libro,
-            'descripcion': respuesta.descripcion_libro,
-            'categoria_id': respuesta.id_categoria,
-            'persona_id': respuesta.id_persona
+            'id': respuesta.id,
+            'nombre': respuesta.nombre,
+            'descripcion': respuesta.descripcion,
+            'categoria_id': respuesta.categoria_id,
+            'persona_id': respuesta.persona_id
         });
 
     } catch (e) {
@@ -589,22 +589,22 @@ app.put('/libro/prestar/:id', async(req, res) => {
             throw new Error('Ese libro no existe')
         }
         // verifico si el libro ya fue prestado
-        const idPersona = respuesta[0].id_persona;
+        const idPersona = respuesta[0].persona_id;
         if (idPersona != null) {
             throw new Error("El libro ya fue prestado");
         }
-        if (await trim.conEspacios(req.body.id_persona)){
+        if (await trim.conEspacios(req.body.persona_id)){
 			throw new Error('Los campos requeridos no pueden permanecer vacios');
 		}
         // VERIFICACIÓN PERSONA
         if (req.body.id_persona != null) {
-            let respuesta = await personaController.verPersonaId(req.body.id_persona);
+            let respuesta = await personaController.verPersonaId(req.body.persona_id);
             if (respuesta.length == 0) {
                 throw new Error('No se encuentra esa persona');
             }
         }
 
-        respuesta = await libroController.prestarLibro([req.body.id_persona, req.params.id]);
+        respuesta = await libroController.prestarLibro([req.body.persona_id, req.params.id]);
 
         res.status(200).send({
             "respuesta": "El libro se presto correctamente"
@@ -633,7 +633,7 @@ app.put('/libro/devolver/:id', async(req, res) => {
             throw new Error('Ese libro no existe')
         }
         // verifico si el libro ya fue prestado
-        const idPersona = respuesta[0].id_persona;
+        const idPersona = respuesta[0].persona_id;
         if (idPersona == null) {
             throw new Error("El libro no esta prestado");
         }
