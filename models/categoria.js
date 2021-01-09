@@ -1,4 +1,4 @@
-const conexion = require('../views/db.js');
+const conexion = require('../db.js');
 
 module.exports = {
 	saveCategory: async (nombre) => {

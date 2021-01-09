@@ -6,10 +6,10 @@ const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
-const categoriaController = require('../controllers/categoriaController.js');
-const personaController = require('../controllers/personaController.js');
-const libroController = require('../controllers/libroController.js');
-const usuarioController = require('../controllers/usuarioController.js');
+const categoriaController = require('./controllers/categoriaController.js');
+const personaController = require('./controllers/personaController.js');
+const libroController = require('./controllers/libroController.js');
+const usuarioController = require('./controllers/usuarioController.js');
 const trim = require('./funcionConEspacios.js');
 // Declaración del paquete express en aplicación-----------------
 const app = express();
@@ -79,7 +79,7 @@ app.post('/registro', async(req, res) => {
         respuesta = await usuarioController.guardarUsuario([usuario, claveEncriptada, email, celu]);
         res.send({ message: "Se registro correctamente" });
     } catch (e) {
-        res.status(414).send({ message: e.nessage });
+        res.status(414).send({ message: e.message });
     }
 });
 
@@ -152,14 +152,15 @@ app.post('/categoria', async(req, res) => {
         //STANDARIZACIÓN
         let nombre = req.body.nombre_categoria.toUpperCase();
         //VERIFICACIÓN
-        let verificacion = await categoriaController.verificarCategoria(nombre)
-        if (verificacion.length > 0) {
+        let respuesta = await categoriaController.verificarCategoria(nombre)
+        if (respuesta.length > 0) {
             throw new Error('Categoria Existente');
         }
         //INSERCIÓN
-        let nuevaCategoria = await categoriaController.postCategoria(nombre);
+        respuesta = await categoriaController.postCategoria(nombre);
         res.status(200).send({
-            nuevaCategoria
+            Nombre: nombre,
+            Id: respuesta.insertId
         });
     } catch (e) {
         console.log(e.message);
@@ -367,7 +368,10 @@ app.put('/persona/:id', async(req, res) => {
         //INSERCIÓN
         respuesta = await personaController.actualizarPersona([nombre, apellido, alias, id]);
         res.status(200).send({
-            respuesta: 'La persona se ha modificado con exito'
+            Nombre: nombre,
+            Apellido: apellido,
+            Email: email,
+            Alias: alias
         })
     } catch (e) {
         console.log(e.message);
@@ -454,7 +458,8 @@ app.post('/libro', async(req, res) => {
             Nombre: nombre,
             Descripcion: descripcion,
             Categoria: idCategoria,
-            id_libro: respuesta.insertId
+            id_libro: respuesta.insertId,
+            id_persona: null
         });
     } catch (e) {
         console.log(e.message);
@@ -553,11 +558,11 @@ app.put('/libro/:id', async(req, res) => {
         respuesta = await libroController.actualizarLibro([nombre, descripcion, req.body.id_categoria, req.body.id_persona, req.params.id]);
         console.log(respuesta);
         res.status(200).send({
-            'id': req.params.id,
-            'nombre': nombre,
-            'descripcion': descripcion,
-            'categoria_id': req.body.id_categoria,
-            'persona_id': req.body.id_persona
+            'id': respuesta.id_libro,
+            'nombre': respuesta.nombre_libro,
+            'descripcion': respuesta.descripcion_libro,
+            'categoria_id': respuesta.id_categoria,
+            'persona_id': respuesta.id_persona
         });
 
     } catch (e) {
