@@ -1,32 +1,29 @@
 const categoriaModel = require('../models/categoria.js')
 
 module.exports = {
-	postCategoria: async (nombre) => {
-		var resultado = await categoriaModel.saveCategory(nombre);
-		return resultado;
+	nuevaCategoria: async (nombre) => {
+		var respuesta = await categoriaModel.nombreCategoria(nombre);
+		if (respuesta.length > 0) {
+			throw new Error('Categoria Existente');
+		}
+
+		respuesta = await categoriaModel.nuevaCategoria(nombre);
+		return respuesta;
 	},
-	verificarCategoria: async (nombre) => {
-		var resultado = await categoriaModel.checkCategory(nombre);
-		return resultado;
-	},
-	verificarCategoriaId: async (id) => {
-		var resultado = await categoriaModel.checkCategoryId(id);
-		return resultado;
-	},
-	mostrarCategorias: async () => {
-		var resultado = await categoriaModel.listCategories();
-		return resultado;
-	},
-	verCategoriaID: async (id) => {
-		var resultado = await categoriaModel.idCategory(id);
-		return resultado;
-	},
-	chequeoLibrosID: async (id) => {
-		var resultado = await categoriaModel.checkBooksCategory(id);
-		return resultado;
-	},
-	borrarCategoriaID: async (id) => {
-		var resultado = await categoriaModel.deleteCategory(id);
-		return resultado;
+
+	borrarCategoria: async (id) => {
+		var respuesta = await categoriaModel.categoriaId(id);
+		if (respuesta.length == 0) {
+			throw new Error("Esta categoria no existe");
+		}
+
+		respuesta = await categoriaModel.categoriaLibros(id);
+		if (respuesta.length > 0) {
+			throw new Error("Esta categoria tiene libros asociados, no se puede eliminar");
+		}
+
+		respuesta = await categoriaModel.borrarCategoria(id)
+		return respuesta;
 	}
+
 }

@@ -4,7 +4,7 @@ const personaModel = require('../models/persona.js');
 
 module.exports = {
     nuevoLibro: async (libro) => {
-        let respuesta = await libroModel.nombreLibro(libro.nombre);
+        var respuesta = await libroModel.nombreLibro(libro.nombre);
         if (respuesta.length > 0) {
             throw new Error('Ese libro ya existe')
         }
@@ -26,7 +26,7 @@ module.exports = {
         if (libro.id != libro.id_params) {
             throw new Error('los datos de envio no coinciden.')
         }
-        let respuesta = await libroModel.libroId(libro.id);
+        var respuesta = await libroModel.libroId(libro.id);
         if (respuesta.length == 0) {
             throw new Error('Ese libro no existe')
         }
@@ -50,7 +50,7 @@ module.exports = {
         if (datos.id != datos.id_params) {
             throw new Error('los datos de envio no coinciden.')
         }
-        let respuesta = await libroModel.libroId(datos.id);
+        var respuesta = await libroModel.libroId(datos.id);
         if (respuesta.length == 0) {
             throw new Error('Ese libro no existe')
         }
@@ -66,7 +66,7 @@ module.exports = {
     },
 
     devolverLibro: async (id) => {
-        let respuesta = await libroModel.libroId(id);
+        var respuesta = await libroModel.libroId(id);
         if (respuesta.length == 0) {
             throw new Error('Ese libro no existe')
         }
@@ -78,7 +78,7 @@ module.exports = {
     },
 
     borrarLibro: async (id) => {
-        let respuesta = await libroModel.libroId(id);
+        var respuesta = await libroModel.libroId(id);
         if (respuesta.length == 0) {
             throw new Error('Ese libro no existe')
         }

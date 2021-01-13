@@ -61,7 +61,7 @@ categoria_id:numero, persona_id:numero/null}] o bien 413,
 
 app.get('/libro', async (req, res) => {
     try {
-        const respuesta = await libroModel.listaLibros();
+        let respuesta = await libroModel.listaLibros();
         res.status(200).send({
             respuesta: respuesta
         });
