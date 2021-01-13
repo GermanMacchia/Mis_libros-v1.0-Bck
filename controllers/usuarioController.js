@@ -1,24 +1,61 @@
 const usuarioService = require('../services/usuarioService.js');
+const trim = require('../funcionConEspacios.js'); //funcion para evitar campos vacios 
+const express = require('express');
+const bcrypt = require('bcrypt');
+const app = express.Router();
 
-module.exports = {
-	nombreUsuario: async (usuario) => {
-		var nombreUsuario = await usuarioService.verificarNombreUsuario(usuario);
-		return nombreUsuario;
-	},
-	claveUsuario: async (usuario) => {
-		var claveUsuario = await usuarioService.verClaveUsuario(usuario);
-		return claveUsuario;
-	},
-	emailUsuario: async (usuario) => {
-		var emailUsuario = await usuarioService.verEmailUsuario(usuario);
-		return emailUsuario;
-	},
-	idUsuario: async (usuario) => {
-		var idUsuario = await usuarioService.verIdUsuario(usuario);
-		return idUsuario;
-	},
-	guardarUsuario: async ([usuario, claveEncriptada, email, celu]) => {
-		var guardarUsuario = await usuarioService.guardarNuevoUsuario([usuario, claveEncriptada, email, celu]);
-		return guardarUsuario;
-	}
-}
+ 
+app.post('/registro', async(req, res) => {
+    try {
+        if (!req.body.usuario || 
+            !req.body.clave || 
+            !req.body.email || 
+            !req.body.celu) {
+            throw new Error('No enviaste todos los datos necesarios');
+        }
+
+        const claveEncriptada = await bcrypt.hash(req.body.clave, 10);
+        let usuario = {
+            "usuario": req.body.usuario,
+            "email": req.body.email.toUpperCase(),
+            "clave": claveEncriptada,
+            "celu": req.body.celu
+        }
+
+        let respuesta = await usuarioService.registro(usuario);
+
+        res.send({ message: "Se registro correctamente" }); 
+    } catch (e) {
+        res.status(414).send({ message: e.message });
+    }
+});
+
+
+app.post('/login', async(req, res) => {
+    try {
+        if (!req.body.user ||
+            !req.body.pass) {
+            res.send({
+                error: 'No mandaste todos los datos'
+            })
+            return;
+        }
+
+        let usuario = {
+            "user": req.body.user,
+            "pass": req.body.pass
+        }
+        let respuesta = await usuarioService.login(usuario);
+        
+        res.send({
+            respuesta
+        });
+    } catch (e) {
+        console.log(e.message);
+        res.status(413).send({
+            error: e.message
+        })
+    }
+});
+
+module.exports = app;

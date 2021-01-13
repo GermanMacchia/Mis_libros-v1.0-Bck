@@ -1,43 +1,54 @@
 const conexion = require('../db.js');
 
 module.exports = {
-    bookVerify: async (nombre) => {
-        var respuesta = await conexion.query(
+    nombreLibro: async (nombre) => {
+        let respuesta = await conexion.query(
             'SELECT nombre FROM libros WHERE nombre = ?', [nombre]);
         return respuesta;
     },
-    bookVerifyId: async (id) => {
-        var respuesta = await conexion.query(
+    libroId: async (id) => {
+        let respuesta = await conexion.query(
             'SELECT * FROM libros WHERE id = ?', [id]);
         return respuesta;
     },
-    categoryVerify: async (idCategoria) => {
-        var respuesta = await conexion.query(
-            'SELECT id FROM categorias WHERE id = ?', [idCategoria]);
+    categoriaId: async (id) => {
+        let respuesta = await conexion.query(
+            'SELECT categoria_id FROM libros WHERE id = ?', [id]);
         return respuesta;
     },
-    saveNewBook: async ([nombre, descripcion, idCategoria]) => {
-        var respuesta = await conexion.query(
-            'INSERT INTO libros (nombre, descripcion, categoria_id) VALUE (?,?,?)', [nombre, descripcion, idCategoria]);
+    personaId: async (id) => {
+        let respuesta = await conexion.query(
+            'SELECT persona_id FROM libros WHERE id = ?', [id]);
         return respuesta;
     },
-    seeListBooks: async () => {
-        var respuesta = await conexion.query(
+    nombreId: async (id) => {
+        let respuesta = await conexion.query(
+            'SELECT nombre FROM libros WHERE id = ?', [id]);
+        return respuesta;
+    },
+    nuevoLibro: async (libro) => {
+        let respuesta = await conexion.query(
+            'INSERT INTO libros (nombre, descripcion, categoria_id) VALUE (?,?,?)', [libro.nombre, libro.descripcion, libro.categoria_id]);
+        return respuesta;
+    },
+    listaLibros: async () => {
+        let respuesta = await conexion.query(
             'SELECT * FROM libros');
         return respuesta;
     },
-    updateBooks: async ([nombre, descripcion, idCategoria, idPersona, id]) => {
-        const query = 'UPDATE libros SET nombre = ?, descripcion = ?, categoria_id = ?, persona_id = ? WHERE id = ?';
-        const respuesta = await conexion.query(query, [nombre, descripcion, idCategoria, idPersona, id]);
+    actualizarLibro: async (libro) => {
+        let respuesta = await conexion.query('UPDATE libros SET descripcion = ? WHERE id = ?', [libro.descripcion, libro.id]);
         return respuesta;
     },
-    lendsBooks: async ([idPersona, id]) => {
-        let query = 'UPDATE libros SET persona_id = ? WHERE id = ?';
-        respuesta = await conexion.query(query, [idPersona, id]);
+    prestarLibro: async (datos) => {
+        let respuesta = await conexion.query('UPDATE libros SET persona_id = ? WHERE id = ?', [datos.persona_id, datos.id]);
         return respuesta;
     },
-    deleteBooks: async ([id]) => {
-        query = "DELETE FROM libros WHERE id = ?";
-        respuesta = await conexion.query(query, [id]);
+    devolverLibro: async (id) => {
+        let respuesta = await conexion.query('UPDATE libros SET persona_id = ? WHERE id = ?', [null, id]);
+        return respuesta;
+    },
+    borrarLibro: async (id) => {
+        let respuesta = await conexion.query("DELETE FROM libros WHERE id = ?", [id]);
     }
 }

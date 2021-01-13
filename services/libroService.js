@@ -1,37 +1,93 @@
 const libroModel = require('../models/libro.js');
+const categoriaModel = require('../models/categoria.js')
+const personaModel = require('../models/persona.js');
 
 module.exports = {
-    verificarLibros: async (nombre) => {
-        var verificarLibros = await libroModel.bookVerify(nombre);
-        return verificarLibros;
+    nuevoLibro: async (libro) => {
+        let respuesta = await libroModel.nombreLibro(libro.nombre);
+        if (respuesta.length > 0) {
+            throw new Error('Ese libro ya existe')
+        }
+        respuesta = await categoriaModel.categoriaId(libro.categoria_id);
+        if (respuesta.length == 0) {
+            throw new Error('No existe la categoria indicada')
+        }
+        if (libro.persona_id != null) {
+            respuesta = await personaModel.personaId(libro.persona_id);
+            if (respuesta.length == 0) {
+                throw new Error('No existe la persona indicada')
+            }
+        }
+        respuesta = await libroModel.nuevoLibro(libro);
+        return respuesta;
     },
-    verificarLibrosId: async (id) => {
-        var verificarLibrosId = await libroModel.bookVerifyId(id);
-        return verificarLibrosId;
-    },
-    verificarCategoriaId: async (idCategoria) => {
-        var verificarCategoriaId = await libroModel.categoryVerify(idCategoria);
-        return verificarCategoriaId;
-    },
-    guardarNuevoLibro: async ([nombre, descripcion, idCategoria]) => {
-        var guardarNuevoLibro = await libroModel.saveNewBook([nombre, descripcion, idCategoria]);
-        return guardarNuevoLibro;
-    },
-    verlistaLibros: async () => {
-        var verlistaLibros = await libroModel.seeListBooks();
-        return verlistaLibros;
-    },
-    actualizarLibro: async ([nombre, descripcion, idCategoria, idPersona, id]) => {
-        const actualizarLibro = await libroModel.updateBooks([nombre, descripcion, idCategoria, idPersona, id]);
-        return actualizarLibro;
-    },
-    prestarLibro: async ([idPersona, id]) => {
-        const prestarLibro = await libroModel.lendsBooks([idPersona, id]);
-        return prestarLibro;
-    },
-    borrarLibro: async ([id]) => {
-        const borrarlibro = await libroModel.deleteBooks([id]);
-        return borrarlibro;
-    }
 
+    libroUpdate: async (libro) => {
+        if (libro.id != libro.id_params) {
+            throw new Error('los datos de envio no coinciden.')
+        }
+        let respuesta = await libroModel.libroId(libro.id);
+        if (respuesta.length == 0) {
+            throw new Error('Ese libro no existe')
+        }
+        respuesta = await libroModel.nombreId(libro.id);
+        if (respuesta[0].nombre != libro.nombre) {
+            throw new Error('Solo se puede modificar la descripcion del libro')
+        }
+        respuesta = await libroModel.categoriaId(libro.id);
+        if (respuesta[0].categoria_id != libro.categoria_id) {
+            throw new Error('Solo se puede modificar la descripcion del libro')
+        }
+        respuesta = await libroModel.personaId(libro.id);
+        if (JSON.stringify(respuesta[0].persona_id) != libro.persona_id) {
+            throw new Error('Solo se puede modificar la descripcion del libro');
+        }
+        respuesta = await libroModel.actualizarLibro(libro);
+        return respuesta;
+    },
+
+    prestarLibro: async (datos) => {
+        if (datos.id != datos.id_params) {
+            throw new Error('los datos de envio no coinciden.')
+        }
+        let respuesta = await libroModel.libroId(datos.id);
+        if (respuesta.length == 0) {
+            throw new Error('Ese libro no existe')
+        }
+        if (respuesta[0].persona_id != null) {
+            throw new Error("El libro ya fue prestado");
+        }
+        respuesta = await personaModel.personaId(datos.persona_id);
+        if (respuesta.length == 0) {
+            throw new Error('No se encuentra esa persona');
+        }
+        respuesta = await libroModel.prestarLibro(datos);
+        return respuesta;
+    },
+
+    devolverLibro: async (id) => {
+        let respuesta = await libroModel.libroId(id);
+        if (respuesta.length == 0) {
+            throw new Error('Ese libro no existe')
+        }
+        if (respuesta[0].persona_id == null) {
+            throw new Error("El libro no esta prestado");
+        }
+        respuesta = await libroModel.devolverLibro(id)
+        return respuesta;
+    },
+
+    borrarLibro: async (id) => {
+        let respuesta = await libroModel.libroId(id);
+        if (respuesta.length == 0) {
+            throw new Error('Ese libro no existe')
+        }
+        if (respuesta[0].persona_id != null) {
+            throw new Error(
+                "Ese libro esta prestado, no se puede borrar"
+            );
+        }
+        respuesta = await libroModel.borrarLibro(id)
+        return respuesta;
+    }
 }

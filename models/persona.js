@@ -16,7 +16,7 @@ module.exports = {
 			'SELECT * FROM personas');
 		return respuesta;
 	},
-	seePersonId: async (id) => {
+	personaId: async (id) => {
 		var respuesta = await conexion.query(
 		'SELECT * FROM personas WHERE id = ?', [id]);
 		return respuesta;

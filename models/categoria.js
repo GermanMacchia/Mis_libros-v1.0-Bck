@@ -11,7 +11,7 @@ module.exports = {
 			'SELECT id FROM categorias WHERE nombre = ?', [nombre]);
 		return respuesta;
 	},
-	checkCategoryId: async (id) => {
+	categoriaId: async (id) => {
 		var respuesta = await conexion.query(
 			'SELECT * FROM categorias WHERE id = ?', [id]);
 		return respuesta;

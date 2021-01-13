@@ -1,25 +1,45 @@
 const usuarioModel = require('../models/usuario.js');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 module.exports = {
-	verificarNombreUsuario: async (usuario) => {
-		var verificarNombreUsuario = await usuarioModel.userNameVerify(usuario);
-		return verificarNombreUsuario;
+	login: async (usuario) => {
+
+        let respuesta = await usuarioModel.nombreUsuario(usuario.user);
+        if (respuesta.length == 0) { // Si no me arroja ningun resultado entonces el query esta vacio
+            throw new Error('El nombre de usuario no esta registrado')
+        };
+       
+        respuesta = await usuarioModel.claveUsuario(usuario.user);
+        let passverify = bcrypt.compareSync(usuario.pass, respuesta[0].clave_encriptada)
+        if (passverify == false) {
+            throw new Error('Contraseña incorrecta')
+        };
+        
+        let email = await usuarioModel.emailUsuario(usuario.user);
+        let id = await usuarioModel.idUsuario(usuario.user);
+        const tokenData = {
+            nombre: usuario.user,
+            email: email,
+            user_id: id
+        };
+        const token = jwt.sign(tokenData, 'Secret', { // Se utiliza una palabra determinada para codificar el token
+            expiresIn: 60 * 60 * 24 // en este caso, expira en 24hs
+        });
+
+        return token;
 	},
-	verClaveUsuario: async (usuario) => {
-		var verClaveUsuario = await usuarioModel.checkUserPass(usuario);
-		return verClaveUsuario;
-	},
-	verEmailUsuario: async (usuario) => {
-		var verEmailUsuario = await usuarioModel.checkEmailUser(usuario);
-		return verEmailUsuario;
-	},
-	verIdUsuario: async (usuario) => {
-		var verIdUsuario = await usuarioModel.checkIdUser(usuario);
-		return verIdUsuario;
-	},
-	guardarNuevoUsuario: async ([usuario, claveEncriptada, email, celu]) => {
-		var verIdUsuario = await usuarioModel.saveUser([usuario, claveEncriptada, email, celu]);
-		return verIdUsuario;
+
+	registro: async (usuario) => {
+
+        let respuesta = await usuarioModel.nombreUsuario(usuario.usuario);
+        if (respuesta.length > 0) {
+            throw new Error('Nombre de Usuario existente')
+        }
+        
+        respuesta = await usuarioModel.nuevoUsuario(usuario);
+
+        return respuesta;
 	}
 }
 
