@@ -1,43 +1,46 @@
 const conexion = require('../db.js');
 
 module.exports = {
-	personVerify: async (email) => {
-		var respuesta = await conexion.query(
+	mailPersona: async (email) => {
+		let respuesta = await conexion.query(
 			'SELECT * FROM personas WHERE email = ?', [email]);
 		return respuesta;
 	},
-	saveNewPerson: async ([nombre, apellido, email, alias]) => {
-		var respuesta = await conexion.query(
-			'INSERT INTO personas (nombre, apellido, email, alias) VALUES (?,?,?,?)', [nombre, apellido, email, alias]);
+	guardarPersona: async (persona) => {
+		let respuesta = await conexion.query(
+			'INSERT INTO personas (nombre, apellido, email, alias) VALUES (?,?,?,?)', 
+			[persona.nombre, persona.apellido, persona.email, persona.alias]);
 		return respuesta;
 	},
-	seePersonList: async () => {
-		var respuesta = await conexion.query(
+	listaPersonas: async () => {
+		let respuesta = await conexion.query(
 			'SELECT * FROM personas');
 		return respuesta;
 	},
 	personaId: async (id) => {
-		var respuesta = await conexion.query(
+		let respuesta = await conexion.query(
 		'SELECT * FROM personas WHERE id = ?', [id]);
 		return respuesta;
 	},
-	doubleCheck: async ([email, id]) => {
-		var respuesta = await conexion.query(
-		'SELECT * FROM personas WHERE email = ? AND id= ?', [email, id]);
+	verificacionDoble: async (persona) => {
+		let respuesta = await conexion.query(
+		'SELECT * FROM personas WHERE email = ? AND id= ?', 
+		[persona.email, persona.id_params]);
 		return respuesta;
 	},
-	updatePerson: async ([nombre, apellido, alias, id]) => {
-		var respuesta = await conexion.query(
-			'UPDATE personas SET nombre = ?, apellido = ?, alias = ? WHERE id = ?', [nombre, apellido, alias, id]);
+	personaUpdate: async (persona) => {
+		let respuesta = await conexion.query(
+			'UPDATE personas SET nombre = ?, apellido = ?, alias = ? WHERE id = ?', 
+			[persona.nombre, persona.apellido, persona.alias, persona.id_params]);
 		return respuesta;
 	},
-	bookPerson: async (id) => {
-		var respuesta = await conexion.query(
+	librosPersona: async (id) => {
+		let respuesta = await conexion.query(
 			"SELECT * FROM libros WHERE persona_id = ?", [id]);
 		return respuesta;
 	},
-	deletePerson: async (id) => {
-		var respuesta = await conexion.query(
+	borrarPersona: async (id) => {
+		let respuesta = await conexion.query(
 			"DELETE FROM personas WHERE id = ?", [id]);
 		return respuesta;
 	}

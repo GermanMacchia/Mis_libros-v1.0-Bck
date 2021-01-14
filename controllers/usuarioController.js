@@ -13,6 +13,12 @@ app.post('/registro', async(req, res) => {
             !req.body.celu) {
             throw new Error('No enviaste todos los datos necesarios');
         }
+        if (trim.conEspacios(req.body.usuario) ||
+            trim.conEspacios(req.body.clave) ||
+            trim.conEspacios(req.body.email)||
+            trim.conEspacios(req.body.celu)) {
+            throw new Error('Los campos requeridos no pueden permanecer vacios');
+        }
 
         const claveEncriptada = await bcrypt.hash(req.body.clave, 10);
         let usuario = {

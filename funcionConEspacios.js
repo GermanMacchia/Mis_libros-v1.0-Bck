@@ -1,6 +1,6 @@
 
 module.exports = {
-	conEspacios: async function (campo) {
+	conEspacios: function (campo) {
 		if (campo.trim().length == 0) {
 			return true;
 		} else {

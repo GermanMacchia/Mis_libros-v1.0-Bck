@@ -24,10 +24,10 @@ app.post('/libro', async (req, res) => {
             !req.body.persona_id) {
             throw new Error('Nombre y Categoría son datos obligatorios');
         }
-        if (await trim.conEspacios(req.body.nombre) ||
-            await trim.conEspacios(req.body.descripcion) ||
-            await trim.conEspacios(req.body.categoria_id) ||
-            await trim.conEspacios(req.body.persona_id)) {
+        if (trim.conEspacios(req.body.nombre) ||
+            trim.conEspacios(req.body.descripcion) ||
+            trim.conEspacios(req.body.categoria_id) ||
+            trim.conEspacios(req.body.persona_id)) {
             throw new Error('Los campos requeridos no pueden permanecer vacios');
         }
         let libro = {
@@ -114,11 +114,11 @@ app.put('/libro/:id', async (req, res) => {
             !req.body.persona_id) {
             throw new Error('Los datos requeridos son obligatorios');
         }
-        if (await trim.conEspacios(req.body.id) ||
-            await trim.conEspacios(req.body.nombre) ||
-            await trim.conEspacios(req.body.descripcion) ||
-            await trim.conEspacios(req.body.categoria_id) ||
-            await trim.conEspacios(req.body.persona_id)) {
+        if (trim.conEspacios(req.body.id) ||
+            trim.conEspacios(req.body.nombre) ||
+            trim.conEspacios(req.body.descripcion) ||
+            trim.conEspacios(req.body.categoria_id) ||
+            trim.conEspacios(req.body.persona_id)) {
             throw new Error('Los campos requeridos no pueden permanecer vacios');
         }
         let libro = {
@@ -161,8 +161,8 @@ app.put('/libro/prestar/:id', async (req, res) => {
             !req.body.persona_id) {
             throw new Error('Los datos requeridos son obligatorios');
         }
-        if (await trim.conEspacios(req.body.id) ||
-            await trim.conEspacios(req.body.persona_id)) {
+        if (trim.conEspacios(req.body.id) ||
+            trim.conEspacios(req.body.persona_id)) {
             throw new Error('Los campos requeridos no pueden permanecer vacios');
         }
         let datos = {
