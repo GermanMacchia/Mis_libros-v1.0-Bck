@@ -1,18 +1,18 @@
 'use strict'
 
-// Pedidos de paquetes ------------------------------------------
+// Pedidos de paquetes -----------------------
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
 const cors = require('cors');
 
-// Requerimiento de carpetas-----------------------------------------
+// Requerimiento de carpetas-----------------
 const categoriaController = require('./controllers/categoriaController.js');
 const personaController = require('./controllers/personaController.js');
 const libroController = require('./controllers/libroController.js');
 const usuarioController = require('./controllers/usuarioController.js');
 
-// Declaración del paquete express en aplicación-----------------
+// Declaración del paquete express ----------
 const app = express();
 
 // Configurar cabeceras y cors
@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 });
 
 
-// Autenticación (Middleware) ----------------------------------------
+// Autenticación (Middleware) ----------
 const auth = (req, res, next) => {
     const token = req.headers['authorization'];
     if (token) {
@@ -58,8 +58,8 @@ app.use('/', auth.unless({
 }));
 
 
-// Llamada del middleware especifico del paquete-----------------
-
+// Llamada especifica del paquete-----------------
+app.use(cors());
 app.use(express.json()); //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
 app.use('/', libroController);
@@ -68,7 +68,7 @@ app.use('/', usuarioController);
 app.use('/', categoriaController);
 
 
-// Establecer puerto  -------------------------------------------
+// Establecer puerto  ------------------------
 const port = process.env.PORT ? process.env.PORT : 8000;
 app.listen(port, () => {
     console.log('Aplicación operativa.\nEscuchando el puerto ' + port)
