@@ -41,10 +41,7 @@ app.post('/login', async(req, res) => {
     try {
         if (!req.body.user ||
             !req.body.pass) {
-            res.send({
-                error: 'No mandaste todos los datos'
-            })
-            return;
+            throw new Error('No mandaste todos los datos')
         }
 
         let usuario = {
@@ -54,7 +51,7 @@ app.post('/login', async(req, res) => {
         let respuesta = await usuarioService.login(usuario);
         
         res.send({
-            respuesta
+            token: respuesta
         });
     } catch (e) {
         console.log(e.message);

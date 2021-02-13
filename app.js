@@ -15,6 +15,15 @@ const usuarioController = require('./controllers/usuarioController.js');
 // Declaración del paquete express en aplicación-----------------
 const app = express();
 
+// Configurar cabeceras y cors
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+    next();
+});
+
 
 // Autenticación (Middleware) ----------------------------------------
 const auth = (req, res, next) => {
@@ -38,7 +47,6 @@ const auth = (req, res, next) => {
 
 auth.unless = unless;
 
-// Llamada del middleware especifico del paquete-----------------
 app.use('/', auth.unless({
     path: [{
         url: '/login',
@@ -48,9 +56,12 @@ app.use('/', auth.unless({
         methods: ['POST']
     }]
 }));
+
+
+// Llamada del middleware especifico del paquete-----------------
+
 app.use(express.json()); //permite el mapeo de la peticion json a object js 
 app.use(express.static('public')); // permite uso de la carpeta con el nombre expresado
-app.use(cors());
 app.use('/', libroController);
 app.use('/', personaController);
 app.use('/', usuarioController);
@@ -58,7 +69,7 @@ app.use('/', categoriaController);
 
 
 // Establecer puerto  -------------------------------------------
-const port = process.env.PORT ? process.env.PORT : 3000;
+const port = process.env.PORT ? process.env.PORT : 8000;
 app.listen(port, () => {
     console.log('Aplicación operativa.\nEscuchando el puerto ' + port)
 });
