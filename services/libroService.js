@@ -12,12 +12,15 @@ module.exports = {
         if (respuesta.length == 0) {
             throw new Error('No existe la categoria indicada')
         }
-        if (libro.persona_id != null) {
+
+        if(libro.persona_id != null){
             respuesta = await personaModel.personaId(libro.persona_id);
             if (respuesta.length == 0) {
                 throw new Error('No existe la persona indicada')
             }
         }
+
+
         respuesta = await libroModel.nuevoLibro(libro);
         return respuesta;
     },

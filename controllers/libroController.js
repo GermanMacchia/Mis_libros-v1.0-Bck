@@ -20,16 +20,15 @@ app.post('/libro', async (req, res) => {
     try {
         if (!req.body.nombre ||
             !req.body.descripcion ||
-            !req.body.categoria_id ||
-            !req.body.persona_id) {
+            !req.body.categoria_id) {
             throw new Error('Nombre y Categoría son datos obligatorios');
         }
         if (trim.conEspacios(req.body.nombre) ||
             trim.conEspacios(req.body.descripcion) ||
-            trim.conEspacios(req.body.categoria_id) ||
-            trim.conEspacios(req.body.persona_id)) {
+            trim.conEspacios(req.body.categoria_id) ){
             throw new Error('Los campos requeridos no pueden permanecer vacios');
         }
+        
         let libro = {
             "nombre": req.body.nombre.toUpperCase(),
             "categoria_id": req.body.categoria_id,
@@ -63,7 +62,7 @@ app.get('/libro', async (req, res) => {
     try {
         let respuesta = await libroModel.listaLibros();
         res.status(200).send({
-            respuesta: respuesta
+            respuesta
         });
     } catch (e) {
         console.error(e.message);
