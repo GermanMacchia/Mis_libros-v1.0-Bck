@@ -46,8 +46,21 @@ app.post('/categoria', async (req, res) => {
 - status: 413 y [] */
 
 app.get('/categoria', async (req, res) => {
+
+    //Funcion "temporal" para ordenar tabla Sql
+    function compare( a, b ) {
+        if ( a.id < b.id){
+        return -1;
+        }
+        if ( a.id > b.id){
+        return 1;
+        }
+        return 0;
+    }
+
     try {
         let respuesta = await categoriaModel.listaCategorias();
+        respuesta.sort(compare) //funcion temporal
         res.status(200).send({
             respuesta
         });
@@ -103,5 +116,6 @@ app.delete('/categoria/:id', async (req, res) => {
         });
     }
 });
+
 
 module.exports = app;
