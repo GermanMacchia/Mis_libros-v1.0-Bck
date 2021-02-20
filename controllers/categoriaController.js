@@ -47,20 +47,8 @@ app.post('/categoria', async (req, res) => {
 
 app.get('/categoria', async (req, res) => {
 
-    //Funcion "temporal" para ordenar tabla Sql
-    function compare( a, b ) {
-        if ( a.id < b.id){
-        return -1;
-        }
-        if ( a.id > b.id){
-        return 1;
-        }
-        return 0;
-    }
-
     try {
-        let respuesta = await categoriaModel.listaCategorias();
-        respuesta.sort(compare) //funcion temporal
+        let respuesta = await categoriaModel.listaCategorias(); 
         res.status(200).send({
             respuesta
         });

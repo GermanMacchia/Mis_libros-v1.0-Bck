@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generaciÛn: 02-01-2021 a las 03:05:24
--- VersiÛn del servidor: 10.4.16-MariaDB
--- VersiÛn de PHP: 7.4.12
+-- Tiempo de generaci√≥n: 20-02-2021 a las 04:10:46
+-- Versi√≥n del servidor: 10.4.16-MariaDB
+-- Versi√≥n de PHP: 7.4.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `mislibros`
+-- Base de datos: `mislibrosrct`
 --
 
 -- --------------------------------------------------------
@@ -28,8 +28,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `categorias` (
-  `id` int(10) NOT NULL,
-  `nombre` varchar(50) NOT NULL
+  `id` int(11) NOT NULL,
+  `nombre` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -37,8 +37,11 @@ CREATE TABLE `categorias` (
 --
 
 INSERT INTO `categorias` (`id`, `nombre`) VALUES
-(2, 'FANTASIA'),
-(1, 'TERROR');
+(1, 'AVENTURA'),
+(2, 'CIENCIA'),
+(3, 'DRAMA'),
+(4, 'COMEDIA'),
+(5, 'NOVELA');
 
 -- --------------------------------------------------------
 
@@ -47,11 +50,11 @@ INSERT INTO `categorias` (`id`, `nombre`) VALUES
 --
 
 CREATE TABLE `libros` (
-  `id` int(10) NOT NULL,
-  `nombre` varchar(50) NOT NULL,
-  `descripcion` varchar(200) NOT NULL,
-  `categoria_id` int(10) NOT NULL,
-  `persona_id` int(10) DEFAULT NULL
+  `id` int(11) NOT NULL,
+  `nombre` varchar(40) NOT NULL,
+  `descripcion` char(100) NOT NULL,
+  `categoria_id` int(11) NOT NULL,
+  `persona_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -59,9 +62,7 @@ CREATE TABLE `libros` (
 --
 
 INSERT INTO `libros` (`id`, `nombre`, `descripcion`, `categoria_id`, `persona_id`) VALUES
-(1, 'CONFESSIONS', 'UNA HISTORIA DE VENGANZA', 1, 1),
-(2, 'EL ELFO OSCURO', 'LAS AVENTURAS DEL DROW MAS POPULAR DE LOS REINOS OLVIDADOS', 2, NULL),
-(3, 'HARRY POTTER', 'Harry se entera que es un mago', 2, NULL);
+(1, 'DON QUIJOTE', 'Don Quijote de la mancha', 5, NULL);
 
 -- --------------------------------------------------------
 
@@ -70,11 +71,11 @@ INSERT INTO `libros` (`id`, `nombre`, `descripcion`, `categoria_id`, `persona_id
 --
 
 CREATE TABLE `personas` (
-  `id` int(10) NOT NULL,
-  `nombre` varchar(50) NOT NULL,
-  `apellido` varchar(50) NOT NULL,
-  `email` varchar(60) NOT NULL,
-  `alias` varchar(50) NOT NULL
+  `id` int(11) NOT NULL,
+  `nombre` varchar(20) NOT NULL,
+  `apellido` varchar(20) NOT NULL,
+  `email` varchar(40) NOT NULL,
+  `alias` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -82,8 +83,7 @@ CREATE TABLE `personas` (
 --
 
 INSERT INTO `personas` (`id`, `nombre`, `apellido`, `email`, `alias`) VALUES
-(1, 'JOHN', 'DOE', 'JD@GMAIL.COM', 'NOBODY'),
-(2, 'NATALIA', 'NATALIA', 'NN@GMAIL.COM', 'NO TIENE');
+(1, 'TOMAS', 'AQUINO', 'TOMY@FAMSD.COM', 'AQUI');
 
 -- --------------------------------------------------------
 
@@ -93,22 +93,21 @@ INSERT INTO `personas` (`id`, `nombre`, `apellido`, `email`, `alias`) VALUES
 
 CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(30) NOT NULL,
-  `clave_encriptada` char(150) NOT NULL,
-  `email` varchar(30) NOT NULL,
-  `celu` varchar(30) NOT NULL
+  `nombre` varchar(20) NOT NULL,
+  `celu` int(20) NOT NULL,
+  `email` varchar(40) NOT NULL,
+  `clave_encriptada` char(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Õndices para tablas volcadas
+-- √çndices para tablas volcadas
 --
 
 --
 -- Indices de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nombre` (`nombre`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `libros`
@@ -122,8 +121,7 @@ ALTER TABLE `libros`
 -- Indices de la tabla `personas`
 --
 ALTER TABLE `personas`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -136,28 +134,28 @@ ALTER TABLE `usuarios`
 --
 
 --
--- AUTO_INCREMENT de la tabla `genero`
+-- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `libros`
 --
 ALTER TABLE `libros`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `personas`
 --
 ALTER TABLE `personas`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Restricciones para tablas volcadas
