@@ -30,5 +30,10 @@ module.exports = {
 		let respuesta = await conexion.query(
 			'DELETE FROM categorias WHERE id = ?', [id]);
 		return respuesta;
+	},
+	resetCategorias: async () => {
+		let respuesta = await conexion.query(
+			"ALTER TABLE categorias AUTO_INCREMENT = 1");
+		return respuesta;
 	}
 }

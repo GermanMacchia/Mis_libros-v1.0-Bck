@@ -43,5 +43,10 @@ module.exports = {
 		let respuesta = await conexion.query(
 			"DELETE FROM personas WHERE id = ?", [id]);
 		return respuesta;
+	},
+	resetPersonas: async () => {
+	let respuesta = await conexion.query(
+		"ALTER TABLE personas AUTO_INCREMENT = 1");
+	return respuesta;
 	}
 }

@@ -4,8 +4,6 @@ const trim = require('../funcionConEspacios.js');
 const express = require('express');
 const app = express.Router();
 
-
-
 // CATEGORIA --------------------------------------------------------
 
 
@@ -105,5 +103,18 @@ app.delete('/categoria/:id', async (req, res) => {
     }
 });
 
+app.put('/c.reset', async(req, res) => {
+    try {
+        let respuesta = await categoriaModel.resetCategorias();
+        res.status(200).send({
+            respuesta
+        });
+    } catch (e) {
+        console.log(e.message);
+        res.status(413).send({
+            error: e.message
+        });
+    }
+});
 
 module.exports = app;

@@ -160,4 +160,18 @@ app.delete("/persona/:id", async(req, res) => {
     }
 });
 
+app.put('/p.reset', async(req, res) => {
+    try {
+        let respuesta = await personaModel.resetPersonas();
+        res.status(200).send({
+            respuesta
+        });
+    } catch (e) {
+        console.log(e.message);
+        res.status(413).send({
+            error: e.message
+        });
+    }
+});
+
 module.exports = app;
