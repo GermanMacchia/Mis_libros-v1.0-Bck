@@ -99,6 +99,25 @@ app.get('/persona/:id', async(req, res) => {
     }
 });
 
+app.get('/persona/libro/:id', async(req, res) => {
+    try {
+        let id = req.params.id;
+
+        let respuesta = await personaModel.librosPersona(id);
+        if (respuesta.length == 0) {
+            throw new Error('No tiene libros prestados');
+        }
+        res.status(200).send({
+            respuesta: respuesta
+        });
+    } catch (e) {
+        console.error(e.message);
+        res.status(413).send({
+            error: e.message
+        });
+    }
+});
+
 /* 8 - Put ID <<<<<<<<<<<<<<<<<<
 
 '/persona/:id' recibe: {nombre: string, apellido: string, alias: string, 
