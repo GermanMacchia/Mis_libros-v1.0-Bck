@@ -35,5 +35,11 @@ module.exports = {
 		let respuesta = await conexion.query(
 			"ALTER TABLE categorias AUTO_INCREMENT = 1");
 		return respuesta;
+	},
+	modificarCategoria: async (categoria) => {
+		let respuesta = await conexion.query(
+			'UPDATE categorias SET nombre = ? WHERE id = ?',[categoria.nombre, categoria.id]
+		);
+		return respuesta;
 	}
 }
