@@ -117,4 +117,32 @@ app.put('/c.reset', async(req, res) => {
     }
 });
 
+app.put('/categoria/:id', async (req, res) => {
+    try {
+        console.log(req.body);
+        if (!req.params.id ||
+            !req.body.nombre 
+            ) {
+            throw new Error('Los datos requeridos son obligatorios');
+        }
+      
+        let categoria = {
+            "nombre": req.body.nombre.toUpperCase(),
+            "id": req.params.id             
+        }
+
+        let respuesta = await categoriaService.modificarCategoria(categoria);
+        res.status(200).send({
+            'id': categoria.id,
+            'nombre': categoria.nombre            
+        });
+    } catch (e) {
+        console.error(e.message);
+        res.status(413).send({
+            "Error": e.message
+        });
+    }
+
+})
+
 module.exports = app;

@@ -44,7 +44,7 @@ app.post('/libro', async (req, res) => {
             Categoria_id: libro.idCategoria,
             persona_id: libro.persona_id
         });
-    } catch (e) {
+    } catch (e) {   
         console.log(e.message);
         res.status(413).send({
             error: e.message
@@ -106,27 +106,27 @@ app.get('/libro/:id', async (req, res) => {
 
 app.put('/libro/:id', async (req, res) => {
     try {
-        if (!req.body.id ||
+        console.log(req.params.id, req.body)
+        if (!req.params.id ||
             !req.body.nombre ||
             !req.body.descripcion ||
-            !req.body.categoria_id ||
-            !req.body.persona_id) {
+            !req.body.categoria_id
+            ) {
             throw new Error('Los datos requeridos son obligatorios');
         }
-        if (trim.conEspacios(req.body.id) ||
-            trim.conEspacios(req.body.nombre) ||
-            trim.conEspacios(req.body.descripcion) ||
-            trim.conEspacios(req.body.categoria_id) ||
-            trim.conEspacios(req.body.persona_id)) {
-            throw new Error('Los campos requeridos no pueden permanecer vacios');
-        }
+        // if (trim.conEspacios(req.params.id) ||
+        //     trim.conEspacios(req.body.nombre) ||
+        //     trim.conEspacios(req.body.descripcion) ||
+        //     trim.conEspacios(req.body.categoria_id) 
+        //     ) {
+        //     throw new Error('Los campos requeridos no pueden permanecer vacios');
+        // }
         let libro = {
             "nombre": req.body.nombre.toUpperCase(),
             "categoria_id": req.body.categoria_id,
             "descripcion": req.body.descripcion,
             "persona_id": req.body.persona_id,
-            "id": req.body.id,
-            "id_params": req.params.id
+            "id": req.params.id             
         }
 
         let respuesta = await libroService.libroUpdate(libro);

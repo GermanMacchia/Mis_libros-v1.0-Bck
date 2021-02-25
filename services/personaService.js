@@ -17,10 +17,8 @@ module.exports = {
             throw new Error('La persona no existe');
         }
 
-        respuesta = await personaModel.verificacionDoble(persona);
-        if (respuesta.length == 0) {
-            throw new Error('El email no se puede modificar');
-        }
+        
+       
         respuesta = await personaModel.personaUpdate(persona);
         return respuesta;
 	},
