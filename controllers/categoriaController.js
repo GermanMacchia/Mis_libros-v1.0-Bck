@@ -68,14 +68,14 @@ app.get('/categoria/:id', async (req, res) => {
     try {
         let id = req.params.id;
 
-        let respuesta = await categoriaModel.categoriaId(id);
+        let respuesta = await categoriaService.categoriaID(id);
         res.status(200).send({
             respuesta
         });
     } catch (e) {
         console.log(e.message);
         res.status(413).send({
-            error: 'Error inesperado'
+            error: e.message
         });
     }
 });

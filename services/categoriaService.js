@@ -39,6 +39,14 @@ module.exports = {
 
 		respuesta = await categoriaModel.borrarCategoria(id)
 		return respuesta;
+	},
+
+	categoriaID: async (id) => {
+		var respuesta = await categoriaModel.categoriaId(id);
+		if (respuesta.length < 1) {
+			throw new Error("Esta categoria no existe");
+		}
+		return respuesta;
 	}
 
 }
