@@ -11,11 +11,6 @@ module.exports = {
             'SELECT * FROM libros WHERE id = ?', [id]);
         return respuesta;
     },
-    libroCategoriaId: async (id) => {
-        let respuesta = await conexion.query(
-            'SELECT * FROM libros WHERE categoria_id = ?', [id]);
-        return respuesta;
-    },
     categoriaId: async (id) => {
         let respuesta = await conexion.query(
             'SELECT categoria_id FROM libros WHERE id = ?', [id]);

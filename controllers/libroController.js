@@ -99,25 +99,6 @@ app.get('/libro/:id', async (req, res) => {
     }
 });
 
-app.get('/libro/Categoria/:id', async (req, res) => {
-    try {
-        let respuesta = await libroModel.libroCategoriaId(req.params.id);
-        if (respuesta.length == 0) {
-            throw new Error('La categoria no tiene libros asociados');
-        }
-        console.log(respuesta)
-        res.status(200).send({
-            respuesta: respuesta
-        });
-    } catch (e) {
-        console.error(e.message);
-        res.status(413).send({
-            error: e.message
-        });
-    }
-});
-
-
 /* 13 - Put ID <<<<<<<<<<<<<<<<<<<
 
 '/libro/:id' y {id: numero, nombre:string, descripcion:string, categoria_id:numero,
