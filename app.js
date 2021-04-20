@@ -25,7 +25,14 @@ app.use((req, res, next) => {
     next();
 });
 
-
+//Configurar peticiones
+app.use(function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] === 'https') {
+      res.redirect('http://' + req.hostname + req.url);
+    } else {
+      next();
+    }
+  });
 // Autenticación (Middleware) ----------
 
 const auth = (req, res, next) => {
