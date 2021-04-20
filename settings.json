@@ -1,6 +1,6 @@
 {
-	"host": "localhost",
-	"user": "root",
-	"password": "",
-	"database": "mislibrosrct"
+	"host": "us-cdbr-east-03.cleardb.com",
+	"user": "b0282ca840e5dbt",
+	"password": "b9e06f65",
+	"database": "heroku_c536257f5475a20"
 }
