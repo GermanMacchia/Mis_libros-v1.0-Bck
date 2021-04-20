@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 
 // Autenticación (Middleware) ----------
-/*
+
 const auth = (req, res, next) => {
     const token = req.headers['authorization'];
     if (token) {
@@ -60,7 +60,7 @@ app.use('/', auth.unless({
         methods: ['GET']
     }]
 }));
-*/
+
 
 // Llamada especifica del paquete-----------------
 app.use(cors());
