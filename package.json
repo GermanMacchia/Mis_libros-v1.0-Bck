@@ -4,7 +4,8 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node index.js"
     },
     "author": "",
     "license": "ISC",
@@ -16,5 +17,8 @@
         "jsonwebtoken": "^8.5.1",
         "mysql": "^2.18.1",
         "nodemon": "^2.0.7"
+    },
+    "engines": {
+        "node": "14.15.4"
     }
 }

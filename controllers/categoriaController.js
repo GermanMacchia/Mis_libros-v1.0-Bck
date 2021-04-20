@@ -38,6 +38,20 @@ app.post('/categoria', async (req, res) => {
     }
 });
 
+app.get('/test1', async (req, res) => {
+
+    try {
+        let respuesta = "Hola mundo!"; 
+        res.status(200).send({
+            respuesta
+        });
+    } catch (e) {
+        console.log(e.message);
+        res.status(413).send({
+            error: e.message
+        });
+    }
+});
 /* 2 - Get CATEGORIA <<<<<<<<<<<<<<<<<<
 
 '/categoria' retorna: status 200  y [{id:numerico, nombre:string}]  
