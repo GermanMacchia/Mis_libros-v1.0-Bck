@@ -54,6 +54,9 @@ app.use('/', auth.unless({
     }, {
         url: '/registro',
         methods: ['POST']
+    },{
+        url: '/test1',
+        methods: ['GET']
     }]
 }));
 
