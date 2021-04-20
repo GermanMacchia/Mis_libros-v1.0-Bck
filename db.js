@@ -1,12 +1,19 @@
 const mysql = require('mysql');
 const util = require('util');
-const settings = require('./settings.json')
 var db;
+require('dotenv').config();
 
 function connectDataBase() {
 	if (!db) {
 		//por ahora porque trabajos de forma local
-		db = mysql.createConnection(settings);
+		db = mysql.createConnection(
+			{
+				"host": process.env.HOST,
+				"user": process.env.USER,
+				"password": process.env.PASSWORD,
+				"database": process.env.DB
+			}
+		);
 
 		db.connect((err) => {
 			if (!err) {

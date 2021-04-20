@@ -1,4 +1,5 @@
 .gitignore
 Consignas.txt
 node_modules
+.env
 
