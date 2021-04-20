@@ -16,7 +16,7 @@ const usuarioController = require('./controllers/usuarioController.js');
 const app = express();
 
 // Configurar cabeceras y cors
-/*
+
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
@@ -25,7 +25,7 @@ app.use((req, res, next) => {
     next();
 });
 
-*/
+
 // Autenticación (Middleware) ----------
 
 const auth = (req, res, next) => {
