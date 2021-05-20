@@ -163,17 +163,14 @@ app.put('/libro/prestar/:id', async (req, res) => {
             !req.body.persona_id) {
             throw new Error('Los datos requeridos son obligatorios');
         }
-        if (trim.conEspacios(req.body.id) ||
-            trim.conEspacios(req.body.persona_id)) {
-            throw new Error('Los campos requeridos no pueden permanecer vacios');
-        }
+
         let datos = {
             "id": req.body.id,
             "persona_id": req.body.persona_id,
             "id_params": req.params.id
         }
 
-        let respuesta = await libroService.prestarLibro(datos);
+        let res= await libroService.prestarLibro(datos);
         res.status(200).send({
             "respuesta": "El libro se presto correctamente"
         });
