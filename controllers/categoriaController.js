@@ -41,7 +41,7 @@ app.post('/categoria', async (req, res) => {
 app.get('/test1', async (req, res) => {
 
     try {
-        let respuesta = "Hola mundo!"; 
+        let respuesta = "Hola mundo desde nuevo upload!"; 
         res.status(200).send({
             respuesta
         });

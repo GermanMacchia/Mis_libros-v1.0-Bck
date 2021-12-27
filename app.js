@@ -1,10 +1,12 @@
 'use strict'
 
+require('dotenv').config();
 // Pedidos de paquetes -----------------------
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const unless = require('express-unless');
 const cors = require('cors');
+
 
 // Requerimiento de carpetas-----------------
 const categoriaController = require('./controllers/categoriaController.js');

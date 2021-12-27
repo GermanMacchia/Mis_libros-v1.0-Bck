@@ -1,7 +1,8 @@
 const mysql = require('mysql');
 const util = require('util');
 var db;
-require('dotenv').config();
+
+//require('dotenv').config();
 
 function connectDataBase() {
 	if (!db) {
