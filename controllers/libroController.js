@@ -24,8 +24,7 @@ app.post('/libro', async (req, res) => {
             throw new Error('Nombre y Categoría son datos obligatorios');
         }
         if (trim.conEspacios(req.body.nombre) ||
-            trim.conEspacios(req.body.descripcion) ||
-            trim.conEspacios(req.body.categoria_id) ){
+            trim.conEspacios(req.body.descripcion) ){
             throw new Error('Los campos requeridos no pueden permanecer vacios');
         }
         
@@ -33,7 +32,9 @@ app.post('/libro', async (req, res) => {
             "nombre": req.body.nombre.toUpperCase(),
             "categoria_id": req.body.categoria_id,
             "descripcion": req.body.descripcion,
-            "persona_id": req.body.persona_id
+            "persona_id": req.body.persona_id,
+            "subtitulo": req.body.subtitulo,
+            "rating": req.body.rating
         }
 
         let respuesta = await libroService.nuevoLibro(libro);
