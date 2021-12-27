@@ -1,6 +1,6 @@
 'use strict'
 
-require('dotenv').config();
+//require('dotenv').config();
 // Pedidos de paquetes -----------------------
 const express = require('express');
 const jwt = require('jsonwebtoken');
