@@ -32,7 +32,7 @@ app.post('/registro', async(req, res) => {
 
         res.send({ message: "Se registro correctamente" }); 
     } catch (e) {
-        res.status(413).send({ message: e.message });
+        res.status(413).send({ message: e });
     }
 });
 

@@ -28,7 +28,7 @@ module.exports = {
     },
     nuevoLibro: async (libro) => {
         let respuesta = await conexion.query(
-            'INSERT INTO libros (nombre, descripcion, categoria_id, persona_id) VALUE (?,?,?,?)', [libro.nombre, libro.descripcion, libro.categoria_id, libro.persona_id]);
+            'INSERT INTO libros (nombre, descripcion, categoria_id, persona_id, subtitulo, rating) VALUE (?,?,?,?,?,?)', [libro.nombre, libro.descripcion, libro.categoria_id, libro.persona_id, libro.suntitulo, libro.rating]);
         return respuesta;
     },
     listaLibros: async () => {
