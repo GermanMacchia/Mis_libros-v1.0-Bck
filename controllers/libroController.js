@@ -21,7 +21,7 @@ app.post('/libro', async (req, res) => {
         if (!req.body.nombre ||
             !req.body.descripcion ||
             !req.body.categoria_id) {
-            throw new Error('Nombre y Categoría son datos obligatorios');
+            throw new Error('Nombre, Categoría y Descripción son datos obligatorios');
         }
         if (trim.conEspacios(req.body.nombre) ||
             trim.conEspacios(req.body.descripcion) ){
