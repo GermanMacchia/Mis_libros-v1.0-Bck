@@ -33,7 +33,7 @@ app.post('/libro', async (req, res) => {
             "categoria_id": req.body.categoria_id,
             "descripcion": req.body.descripcion,
             "persona_id": req.body.persona_id,
-            "subtitulo": req.body.subtitulo,
+            "autor": req.body.autor,
             "rating": req.body.rating
         }
 
@@ -130,7 +130,7 @@ app.put('/libro/:id', async (req, res) => {
             "categoria_id": req.body.categoria_id,
             "descripcion": req.body.descripcion,
             "persona_id": req.body.persona_id,
-            "subtitulo": req.body.subtitulo,
+            "autor": req.body.autor,
             "rating": req.body.rating,
             "id": req.params.id             
         }
