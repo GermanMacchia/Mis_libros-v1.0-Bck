@@ -130,6 +130,8 @@ app.put('/libro/:id', async (req, res) => {
             "categoria_id": req.body.categoria_id,
             "descripcion": req.body.descripcion,
             "persona_id": req.body.persona_id,
+            "subtitulo": req.body.subtitulo,
+            "rating": req.body.rating,
             "id": req.params.id             
         }
 

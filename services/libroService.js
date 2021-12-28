@@ -30,7 +30,8 @@ module.exports = {
         var respuesta = await libroModel.libroId(libro.id);
         if (respuesta.length == 0) {
             throw new Error('Ese libro no existe')
-        }
+        }       
+         /*
         respuesta = await libroModel.nombreId(libro.id);
         if (respuesta[0].nombre != libro.nombre) {
             throw new Error('No se puede actualizar el nombre, solo se puede modificar la descripcion del libro')
@@ -39,10 +40,11 @@ module.exports = {
         if (respuesta[0].categoria_id != libro.categoria_id) {
             throw new Error('No se puede actualizar la categoria, solo se puede modificar la descripcion del libro')
         }
+
         respuesta = await libroModel.personaId(libro.id);
         if (respuesta[0].persona_id != libro.persona_id) {
             throw new Error('No se puede actualizar la persona, solo se puede modificar la descripcion del libro');
-        }
+        }*/
         console.log({libro: libro, respuesta: respuesta[0]});
         respuesta = await libroModel.actualizarLibro(libro);
         return respuesta;

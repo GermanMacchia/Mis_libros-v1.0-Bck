@@ -37,7 +37,7 @@ module.exports = {
         return respuesta;
     },
     actualizarLibro: async (libro) => {
-        let respuesta = await conexion.query('UPDATE libros SET descripcion = ? WHERE id = ?', [libro.descripcion, libro.id]);
+        let respuesta = await conexion.query('UPDATE libros SET nombre = ?, descripcion = ?, categoria_id = ?, persona_id = ?, subtitulo = ?, rating = ? WHERE id = ?', [libro.nombre, libro.descripcion, libro.categoria_id, libro.persona_id, libro.subtitulo, libro.rating, libro.id]);
         return respuesta;
     },
     prestarLibro: async (datos) => {
