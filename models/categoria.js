@@ -8,7 +8,7 @@ module.exports = {
 	},
 	nuevaCategoria: async (categoria) => {
 		let respuesta = await conexion.query(
-			'INSERT INTO categorias (nombre, descripcion, imagen) VALUE (?, ?, ?)', [categoria.nombre, categoria.descripcion, categoria.imagen]);
+			'INSERT INTO categorias (nombre, descripcion, imagen) VALUE (?,?,?)', [categoria.nombre, categoria.descripcion, categoria.imagen]);
 		return respuesta;
 	},
 	categoriaId: async (id) => {
