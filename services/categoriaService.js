@@ -1,13 +1,13 @@
 const categoriaModel = require('../models/categoria.js')
 
 module.exports = {
-	nuevaCategoria: async (nombre) => {
-		var respuesta = await categoriaModel.nombreCategoria(nombre);
+	nuevaCategoria: async (categoria) => {
+		var respuesta = await categoriaModel.nombreCategoria(categoria.nombre);
 		if (respuesta.length > 0) {
 			throw new Error('Categoria Existente');
 		}
 
-		respuesta = await categoriaModel.nuevaCategoria(nombre);
+		respuesta = await categoriaModel.nuevaCategoria(categoria);
 		return respuesta;
 	},
 

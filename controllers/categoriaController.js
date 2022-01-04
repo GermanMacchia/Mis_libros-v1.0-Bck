@@ -23,11 +23,16 @@ app.post('/categoria', async (req, res) => {
             throw new Error('Los campos requeridos no pueden permanecer con espacios vacios');
         }
 
-        let nombre = req.body.nombre.toUpperCase();
+        let categoria = {
+            "nombre": req.body.nombre.toUpperCase(),
+            "descripcion": req.body.descripcion,
+            "imagen": req.body.imagen
+        }
 
-        let respuesta = await categoriaService.nuevaCategoria(nombre)
+        let respuesta = await categoriaService.nuevaCategoria(categoria)
         res.status(200).send({
             Nombre: nombre,
+            imagen: imagen,
             Id: respuesta.insertId
         });
     } catch (e) {
