@@ -6,12 +6,13 @@ module.exports = {
 	login: async (usuario) => {
 
         let respuesta = await usuarioModel.nombreUsuario(usuario.user);
-        if (respuesta.length == 0) { // Si no me arroja ningun resultado entonces el query esta vacio
+        if (!respuesta) { // Si no me arroja ningun resultado entonces el query esta vacio
             throw new Error('El nombre de usuario no esta registrado')
         };
        
         respuesta = await usuarioModel.claveUsuario(usuario.user);
-        let passverify = bcrypt.compareSync(usuario.pass, respuesta[0].clave_encriptada)
+        console.log(respuesta)
+        let passverify = bcrypt.compareSync(usuario.pass, respuesta)
         if (passverify == false) {
             throw new Error('Contraseña incorrecta')
         };
@@ -33,12 +34,13 @@ module.exports = {
 	registro: async (usuario) => {
 
         let respuesta = await usuarioModel.nombreUsuario(usuario.usuario);
-        if (respuesta.length > 0) {
+        
+        if (respuesta) {
             throw new Error('Nombre de Usuario existente')
         }
-        
-        respuesta = await usuarioModel.nuevoUsuario(usuario);
 
+        respuesta = await usuarioModel.nuevoUsuario(usuario);
+        console.log(respuesta)
         return respuesta;
 	}
 }

@@ -1,12 +1,11 @@
-const mysql = require('mysql');
-const util = require('util');
-var db;
 
-//require('dotenv').config();
+const mysql = require('mysql2')
+const util = require('util');
+var db 
+require('dotenv').config();
 
 function connectDataBase() {
 	if (!db) {
-		//por ahora porque trabajos de forma local
 		db = mysql.createPool(
 			{
 				"connectionLimit": 10,
@@ -48,5 +47,7 @@ function connectDataBase() {
 	db.query = util.promisify(db.query);
 	return db;
 }
+
+
 
 module.exports = connectDataBase();

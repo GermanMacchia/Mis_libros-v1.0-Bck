@@ -1,34 +1,46 @@
-const conexion = require('../db.js');
+const conn = require('../conn');
+const DATABASE = 'mislibros';
+const USUARIOS = 'usuarios';
 
 module.exports = {
-	nombreUsuario: async (usuario) => {
-		var respuesta = await conexion.query(
-			'SELECT * from usuarios WHERE nombre = ?', 
-			[usuario]);
-		return respuesta;
+	nombreUsuario: async (nombre) => {
+		const connectiondb = await conn.getConnection();
+		const usuario = await connectiondb
+					.db(DATABASE)
+					.collection(USUARIOS)
+					.findOne({usuario: nombre})
+		return usuario;
 	},
-	claveUsuario: async (usuario) => {
-		var respuesta = await conexion.query(
-			'SELECT clave_encriptada FROM usuarios WHERE nombre = ?', 
-			[usuario]);
-		return respuesta;
+	claveUsuario: async (nombre) => {
+		const connectiondb = await conn.getConnection();
+		const usuario = await connectiondb
+					.db(DATABASE)
+					.collection(USUARIOS)
+					.findOne({usuario: nombre});   
+		return usuario.clave;
 	},
-	emailUsuario: async (usuario) => {
-		var respuesta = await conexion.query(
-			'SELECT email FROM usuarios WHERE nombre = ?', 
-			[usuario]);
-		return respuesta;
+	emailUsuario: async (nombre) => {
+		const connectiondb = await conn.getConnection();
+		const usuario = await connectiondb
+					.db(DATABASE)
+					.collection(USUARIOS)
+					.findOne({usuario: nombre})
+		return usuario.email;
 	},
-	idUsuario: async (usuario) => {
-		var respuesta = await conexion.query(
-			'SELECT id  FROM usuarios WHERE nombre = ?', 
-			[usuario]);
-		return respuesta;
+	idUsuario: async (nombre) => {
+		const connectiondb = await conn.getConnection();
+		const usuario = await connectiondb
+					.db(DATABASE)
+					.collection(USUARIOS)
+					.findOne({usuario: nombre})
+		return usuario._id;
 	},
 	nuevoUsuario: async (usuario) => {
-		var respuesta = await conexion.query(
-			'INSERT INTO usuarios (nombre, clave_encriptada, email, celu) VALUE (?,?,?,?)', 
-			[usuario.usuario, usuario.clave, usuario.email, usuario.celu]);
-		return respuesta;
+		const connectiondb = await conn.getConnection();
+		const result = await connectiondb
+					.db(DATABASE)
+					.collection(USUARIOS)
+					.insertOne(usuario);
+		return result;
 	}
 }

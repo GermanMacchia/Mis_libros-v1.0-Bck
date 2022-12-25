@@ -15,12 +15,13 @@ app.post('/registro', async(req, res) => {
         }
         if (trim.conEspacios(req.body.usuario) ||
             trim.conEspacios(req.body.clave) ||
-            trim.conEspacios(req.body.email)||
-            trim.conEspacios(req.body.celu)) {
+            trim.conEspacios(req.body.email)
+            ) {
             throw new Error('Los campos requeridos no pueden permanecer vacios');
         }
 
         const claveEncriptada = await bcrypt.hash(req.body.clave, 10);
+        console.log(claveEncriptada)
         let usuario = {
             "usuario": req.body.usuario,
             "email": req.body.email.toUpperCase(),
@@ -50,6 +51,7 @@ app.post('/login', async(req, res) => {
         }
         let respuesta = await usuarioService.login(usuario);
         
+        console.log(respuesta)
         res.send({
             token: respuesta
         });
