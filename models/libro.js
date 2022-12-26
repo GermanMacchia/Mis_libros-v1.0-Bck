@@ -1,4 +1,6 @@
-const conexion = require('../db.js');
+const conn = require('../conn');
+const DATABASE = 'mislibros';
+const LIBROS = 'libros';
 
 module.exports = {
     nombreLibro: async (nombre) => {
@@ -7,9 +9,12 @@ module.exports = {
         return respuesta;
     },
     libroId: async (id) => {
-        let respuesta = await conexion.query(
-            'SELECT * FROM libros WHERE id = ?', [id]);
-        return respuesta;
+        const connectiondb = await conn.getConnection();
+		const libro = await connectiondb
+					.db(DATABASE)
+					.collection(LIBROS)
+					.findOne({_id: id})
+		return libro;
     },
     categoriaId: async (id) => {
         let respuesta = await conexion.query(
@@ -27,14 +32,19 @@ module.exports = {
         return respuesta;
     },
     nuevoLibro: async (libro) => {
-        let respuesta = await conexion.query(
-            'INSERT INTO libros (nombre, descripcion, categoria_id, persona_id, autor, rating) VALUE (?,?,?,?,?,?)', [libro.nombre, libro.descripcion, libro.categoria_id, libro.persona_id, libro.autor, libro.rating]);
-        return respuesta;
+		const connectiondb = await conn.getConnection();
+		const result = await connectiondb
+					.db(DATABASE)
+					.collection(LIBROS)
+					.insertOne(libro);
+		return result;
     },
     listaLibros: async () => {
-        let respuesta = await conexion.query(
-            'SELECT * FROM libros');
-        return respuesta;
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(LIBROS)
+		return respuesta;
     },
     actualizarLibro: async (libro) => {
         let respuesta = await conexion.query('UPDATE libros SET nombre = ?, descripcion = ?, categoria_id = ?, persona_id = ?, autor = ?, rating = ? WHERE id = ?', [libro.nombre, libro.descripcion, libro.categoria_id, libro.persona_id, libro.autor, libro.rating, libro.id]);

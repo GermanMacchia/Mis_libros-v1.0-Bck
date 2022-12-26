@@ -4,7 +4,6 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const app = express.Router();
 
- 
 app.post('/registro', async(req, res) => {
     try {
         if (!req.body.usuario || 
@@ -37,7 +36,6 @@ app.post('/registro', async(req, res) => {
     }
 });
 
-
 app.post('/login', async(req, res) => {
     try {
         if (!req.body.user ||
@@ -51,7 +49,7 @@ app.post('/login', async(req, res) => {
         }
         let respuesta = await usuarioService.login(usuario);
         
-        console.log(respuesta)
+
         res.send({
             token: respuesta
         });
