@@ -1,21 +1,33 @@
 const conn = require('../conn');
 const DATABASE = 'mislibros';
 const CATEGORIAS = 'categorias';
+const objectId = require('mongodb').ObjectId;
 
 module.exports = {
 	nombreCategoria: async (nombre) => {
-		let respuesta = await conexion.query(
-			'SELECT id FROM categorias WHERE nombre = ?', [nombre]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(CATEGORIAS)
+					.findOne({nombre: nombre})
+                    			.toArray()
 		return respuesta;
 	},
 	nuevaCategoria: async (categoria) => {
-		let respuesta = await conexion.query(
-			'INSERT INTO categorias (nombre, descripcion, imagen) VALUE (?,?,?)', [categoria.nombre, categoria.descripcion, categoria.imagen]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(CATEGORIAS)
+					.insertOne(categoria);
 		return respuesta;
 	},
 	categoriaId: async (id) => {
-		let respuesta = await conexion.query(
-			'SELECT * FROM categorias WHERE id = ?', [id]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(CATEGORIAS)
+					.findOne({id: id})
+                    			.toArray()
 		return respuesta;
 	},
 	listaCategorias: async () => {
@@ -27,14 +39,22 @@ module.exports = {
                     			.toArray()
 		return respuesta;
 	},
+	//Revisar
 	categoriaLibros: async (id) => {
-		let respuesta = await conexion.query(
-			'SELECT * FROM libros WHERE categoria_id = ?', [id]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(CATEGORIAS)
+					.findOne({id: id})
+                    			.toArray()
 		return respuesta;
 	},
 	borrarCategoria: async (id) => {
-		let respuesta = await conexion.query(
-			'DELETE FROM categorias WHERE id = ?', [id]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(CATEGORIAS)
+					.deleteOne({id: id})
 		return respuesta;
 	},
 	resetCategorias: async () => {
@@ -43,9 +63,11 @@ module.exports = {
 		return respuesta;
 	},
 	modificarCategoria: async (categoria) => {
-		let respuesta = await conexion.query(
-			'UPDATE categorias SET nombre = ? WHERE id = ?',[categoria.nombre, categoria.id]
-		);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(CATEGORIAS)
+					.updateOne({id: categoria.id}, {$set: {nombre: categoria.nombre }});
 		return respuesta;
 	}
 }
