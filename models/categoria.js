@@ -10,7 +10,7 @@ module.exports = {
 					.db(DATABASE)
 					.collection(CATEGORIAS)
 					.findOne({nombre: nombre})
-                    			.toArray()
+		console.log(respuesta)
 		return respuesta;
 	},
 	nuevaCategoria: async (categoria) => {

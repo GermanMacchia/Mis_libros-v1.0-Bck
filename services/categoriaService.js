@@ -3,7 +3,7 @@ const categoriaModel = require('../models/categoria.js')
 module.exports = {
 	nuevaCategoria: async (categoria) => {
 		var respuesta = await categoriaModel.nombreCategoria(categoria.nombre);
-		if (respuesta.length > 0) {
+		if (respuesta) {
 			throw new Error('Categoria Existente');
 		}
 
