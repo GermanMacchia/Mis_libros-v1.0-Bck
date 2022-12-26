@@ -5,11 +5,11 @@ const personaModel = require('../models/persona.js');
 module.exports = {
     nuevoLibro: async (libro) => {
         var respuesta = await libroModel.nombreLibro(libro.nombre);
-        if (respuesta.length > 0) {
+        if (respuesta) {
             throw new Error('Ese libro ya existe')
         }
         respuesta = await categoriaModel.categoriaId(libro.categoria_id);
-        if (respuesta.length == 0) {
+        if (respuesta == null) {
             throw new Error('No existe la categoria indicada')
         }
 
@@ -28,7 +28,7 @@ module.exports = {
     libroUpdate: async (libro) => {
        
         var respuesta = await libroModel.libroId(libro.id);
-        if (respuesta.length == 0) {
+        if (respuesta == null) {
             throw new Error('Ese libro no existe')
         }       
          /*
@@ -55,14 +55,14 @@ module.exports = {
             throw new Error('los datos de envio no coinciden.')
         }
         var respuesta = await libroModel.libroId(datos.id);
-        if (respuesta.length == 0) {
+        if (respuesta == null) {
             throw new Error('Ese libro no existe')
         }
         if (respuesta[0].persona_id != null) {
             throw new Error("El libro ya fue prestado");
         }
         respuesta = await personaModel.personaId(datos.persona_id);
-        if (respuesta.length == 0) {
+        if (respuesta == null) {
             throw new Error('No se encuentra esa persona');
         }
         respuesta = await libroModel.prestarLibro(datos);
@@ -71,7 +71,7 @@ module.exports = {
 
     devolverLibro: async (id) => {
         var respuesta = await libroModel.libroId(id);
-        if (respuesta.length == 0) {
+        if (respuesta == null) {
             throw new Error('Ese libro no existe')
         }
         if (respuesta[0].persona_id == null) {
@@ -83,7 +83,7 @@ module.exports = {
 
     borrarLibro: async (id) => {
         var respuesta = await libroModel.libroId(id);
-        if (respuesta.length == 0) {
+        if (respuesta == null) {
             throw new Error('Ese libro no existe')
         }
         if (respuesta[0].persona_id != null) {
