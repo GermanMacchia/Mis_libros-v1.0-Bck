@@ -1,7 +1,6 @@
 const conn = require('../conn');
 const DATABASE = 'mislibros';
 const CATEGORIAS = 'categorias';
-const objectId = require('mongodb').ObjectId;
 
 module.exports = {
 	nombreCategoria: async (nombre) => {
@@ -10,7 +9,7 @@ module.exports = {
 					.db(DATABASE)
 					.collection(CATEGORIAS)
 					.findOne({nombre: nombre})
-		console.log(respuesta)
+
 		return respuesta;
 	},
 	nuevaCategoria: async (categoria) => {
@@ -27,7 +26,6 @@ module.exports = {
 					.db(DATABASE)
 					.collection(CATEGORIAS)
 					.findOne({id: id})
-                    			.toArray()
 		return respuesta;
 	},
 	listaCategorias: async () => {
@@ -46,7 +44,6 @@ module.exports = {
 					.db(DATABASE)
 					.collection(CATEGORIAS)
 					.findOne({id: id})
-                    			.toArray()
 		return respuesta;
 	},
 	borrarCategoria: async (id) => {
@@ -57,11 +54,12 @@ module.exports = {
 					.deleteOne({id: id})
 		return respuesta;
 	},
+	/*
 	resetCategorias: async () => {
 		let respuesta = await conexion.query(
 			"ALTER TABLE categorias AUTO_INCREMENT = 1");
 		return respuesta;
-	},
+	},*/
 	modificarCategoria: async (categoria) => {
 		const connectiondb = await conn.getConnection();
 		const respuesta = await connectiondb
