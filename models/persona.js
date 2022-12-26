@@ -19,6 +19,9 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(PERSONAS)
+					.find()
+                    			.toArray()
+					
 		return respuesta;
 	},
 	personaId: async (id) => {

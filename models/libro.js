@@ -44,6 +44,9 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(LIBROS)
+                    .find()
+                    .toArray()
+                    
 		return respuesta;
     },
     actualizarLibro: async (libro) => {

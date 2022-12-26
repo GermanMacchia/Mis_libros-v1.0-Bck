@@ -23,6 +23,8 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(CATEGORIAS)
+					.find()
+                    			.toArray()
 		return respuesta;
 	},
 	categoriaLibros: async (id) => {
