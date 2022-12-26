@@ -1,4 +1,6 @@
-const conexion = require('../db.js');
+const conn = require('../conn');
+const DATABASE = 'mislibros';
+const PERSONAS = 'personas';
 
 module.exports = {
 	mailPersona: async (email) => {
@@ -13,8 +15,10 @@ module.exports = {
 		return respuesta;
 	},
 	listaPersonas: async () => {
-		let respuesta = await conexion.query(
-			'SELECT * FROM personas');
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(PERSONAS)
 		return respuesta;
 	},
 	personaId: async (id) => {
