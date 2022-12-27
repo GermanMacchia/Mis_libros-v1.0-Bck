@@ -15,9 +15,11 @@ module.exports = {
     libroId: async (id) => {
         const connectiondb = await conn.getConnection();
 		    const libro = await connectiondb
-              .db(DATABASE)
-              .collection(LIBROS)
-              .findOne({id: id})
+                        .db(DATABASE)
+                        .collection(LIBROS)
+                        .findOne({id: parseInt(id)})
+                        
+        console.log(libro)
         return libro;
     },
     categoriaId: async (id) => {
@@ -25,16 +27,16 @@ module.exports = {
       const respuesta = await connectiondb
             .db(DATABASE)
             .collection(LIBROS)
-            .findOne({id: id})
+            .findOne({id: parseInt(id)})
 
 		  return respuesta.categoria_id;
     },
     personaId: async (id) => {
       const connectiondb = await conn.getConnection();
       const respuesta = await connectiondb
-            .db(DATABASE)
-            .collection(LIBROS)
-            .findOne({id: id})
+                          .db(DATABASE)
+                          .collection(LIBROS)
+                          .findOne({id: parseInt(id)})
 
       return respuesta.persona_id;
     },
@@ -43,7 +45,7 @@ module.exports = {
       const respuesta = await connectiondb
             .db(DATABASE)
             .collection(LIBROS)
-            .findOne({id: id})
+            .findOne({id: parseInt(id)})
 
       return respuesta.nombre;
     },
@@ -94,7 +96,7 @@ module.exports = {
         const respuesta = await connectiondb
                             .db(DATABASE)
                             .collection(LIBROS)
-                            .updateOne({_id: new objectId(datos._id)}, 
+                            .updateOne({id:parseInt(id)}, 
                                         {$set: {persona_id: null }});
         return respuesta;
     },
@@ -103,7 +105,7 @@ module.exports = {
 		const respuesta = await connectiondb
                             .db(DATABASE)
                             .collection(LIBROS)
-                            .deleteOne({id: id})
+                            .deleteOne({id: parseInt(id)})
 		return respuesta;
     }
 }

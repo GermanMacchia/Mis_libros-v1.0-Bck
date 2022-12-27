@@ -25,7 +25,7 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(CATEGORIAS)
-					.findOne({id: id})
+					.findOne({id: parseInt(id)})
 
 		return respuesta;
 	},
@@ -44,7 +44,7 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(CATEGORIAS)
-					.findOne({id: id})
+					.findOne({id: parseInt(id)})
 		return respuesta;
 	},
 	borrarCategoria: async (id) => {
@@ -52,7 +52,7 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(CATEGORIAS)
-					.deleteOne({id: id})
+					.deleteOne({id: parseInt(id)})
 		return respuesta;
 	},
 	/*
@@ -66,7 +66,7 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(CATEGORIAS)
-					.updateOne({id: categoria.id}, {$set: {nombre: categoria.nombre }});
+					.updateOne({id: parseInt(categoria.id)}, {$set: {nombre: categoria.nombre }});
 		return respuesta;
 	}
 }

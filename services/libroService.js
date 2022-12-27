@@ -83,10 +83,11 @@ module.exports = {
 
     borrarLibro: async (id) => {
         var respuesta = await libroModel.libroId(id);
+        
         if (respuesta == null) {
             throw new Error('Ese libro no existe')
         }
-        if (respuesta[0].persona_id != null) {
+        if (respuesta.persona_id != null) {
             throw new Error(
                 "Ese libro esta prestado, no se puede borrar"
             );

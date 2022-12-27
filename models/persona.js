@@ -33,7 +33,7 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(PERSONAS)
-					.findOne({id: id})
+					.findOne({id: parseInt(id)})
 		return respuesta;
 	},
 	verificacionDoble: async (persona) => {
@@ -49,7 +49,7 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection(CATEGORIAS)
-					.updateOne({id: persona.id_params}, {$set: {nombre: persona.nombre, apellido: persona.apellido, alias: persona.alias }});
+					.updateOne({id: parseInt(persona.id_params)}, {$set: {nombre: persona.nombre, apellido: persona.apellido, alias: persona.alias }});
 		return respuesta;
 	},
 	librosPersona: async (id) => {
@@ -57,7 +57,7 @@ module.exports = {
 		const respuesta = await connectiondb
 					.db(DATABASE)
 					.collection("libros")
-					.find({persona_id: id})
+					.find({persona_id: parseInt(id)})
 					.toArray()
 		return respuesta;
 	},
@@ -66,7 +66,7 @@ module.exports = {
 		const respuesta = await connectiondb
                             .db(DATABASE)
                             .collection(PERSONAS)
-                            .deleteOne({id: id})
+                            .deleteOne({id: parseInt(id)})
 		return respuesta;
 	},
 	/*
