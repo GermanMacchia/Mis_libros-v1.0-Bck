@@ -45,7 +45,7 @@ module.exports = {
         if (respuesta[0].persona_id != libro.persona_id) {
             throw new Error('No se puede actualizar la persona, solo se puede modificar la descripcion del libro');
         }*/
-        console.log({libro: libro, respuesta: respuesta[0]});
+
         respuesta = await libroModel.actualizarLibro(libro);
         return respuesta;
     },

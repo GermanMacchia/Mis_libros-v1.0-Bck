@@ -48,7 +48,7 @@ module.exports = {
 		const connectiondb = await conn.getConnection();
 		const respuesta = await connectiondb
 					.db(DATABASE)
-					.collection(CATEGORIAS)
+					.collection(PERSONAS)
 					.updateOne({id: parseInt(persona.id_params)}, {$set: {nombre: persona.nombre, apellido: persona.apellido, alias: persona.alias }});
 		return respuesta;
 	},
