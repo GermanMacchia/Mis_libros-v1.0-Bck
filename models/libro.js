@@ -5,65 +5,65 @@ const LIBROS = 'libros';
 module.exports = {
     nombreLibro: async (nombre) =>{ 
     	const connectiondb = await conn.getConnection();
-		const respuesta = await connectiondb
-					.db(DATABASE)
-					.collection(LIBROS)
-					.findOne({nombre: nombre})
+      const respuesta = await connectiondb
+            .db(DATABASE)
+            .collection(LIBROS)
+            .findOne({nombre: nombre})
 
-		return respuesta;
+      return respuesta;
     },
     libroId: async (id) => {
         const connectiondb = await conn.getConnection();
-		const libro = await connectiondb
-					.db(DATABASE)
-					.collection(LIBROS)
-					.findOne({id: id})
-		return libro;
+		    const libro = await connectiondb
+              .db(DATABASE)
+              .collection(LIBROS)
+              .findOne({id: id})
+        return libro;
     },
     categoriaId: async (id) => {
-		const connectiondb = await conn.getConnection();
-		const respuesta = await connectiondb
-					.db(DATABASE)
-					.collection(CATEGORIAS)
-					.findOne({id: id})
+      const connectiondb = await conn.getConnection();
+      const respuesta = await connectiondb
+            .db(DATABASE)
+            .collection(LIBROS)
+            .findOne({id: id})
 
-		return respuesta.categoria_id;
+		  return respuesta.categoria_id;
     },
     personaId: async (id) => {
-		const connectiondb = await conn.getConnection();
-		const respuesta = await connectiondb
-					.db(DATABASE)
-					.collection(CATEGORIAS)
-					.findOne({id: id})
+      const connectiondb = await conn.getConnection();
+      const respuesta = await connectiondb
+            .db(DATABASE)
+            .collection(LIBROS)
+            .findOne({id: id})
 
-		return respuesta.persona_id;
+      return respuesta.persona_id;
     },
     nombreId: async (id) => {
-		const connectiondb = await conn.getConnection();
-		const respuesta = await connectiondb
-					.db(DATABASE)
-					.collection(CATEGORIAS)
-					.findOne({id: id})
+      const connectiondb = await conn.getConnection();
+      const respuesta = await connectiondb
+            .db(DATABASE)
+            .collection(LIBROS)
+            .findOne({id: id})
 
-		return respuesta.nombre;
+      return respuesta.nombre;
     },
     nuevoLibro: async (libro) => {
-		const connectiondb = await conn.getConnection();
-		const result = await connectiondb
-                        .db(DATABASE)
-                        .collection(LIBROS)
-                        .insertOne(libro);
-		return result;
+      const connectiondb = await conn.getConnection();
+      const result = await connectiondb
+                          .db(DATABASE)
+                          .collection(LIBROS)
+                          .insertOne(libro);
+      return result;
     },
     listaLibros: async () => {
-		const connectiondb = await conn.getConnection();
-		const respuesta = await connectiondb
-                            .db(DATABASE)
-                            .collection(LIBROS)
-                            .find()
-                            .toArray()
-                    
-		return respuesta;
+      const connectiondb = await conn.getConnection();
+      const respuesta = await connectiondb
+                              .db(DATABASE)
+                              .collection(LIBROS)
+                              .find()
+                              .toArray()
+                      
+      return respuesta;
     },
     actualizarLibro: async (libro) => {
         const connectiondb = await conn.getConnection();
