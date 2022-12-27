@@ -28,7 +28,7 @@ module.exports = {
         }
 
         respuesta = await personaModel.librosPersona(id);
-        if (respuesta) {
+        if (respuesta.length > 0) {
             throw new Error(
                 "Esta persona tiene libros asociados, no se puede eliminar"
             );

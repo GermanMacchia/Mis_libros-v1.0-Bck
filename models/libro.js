@@ -72,14 +72,14 @@ module.exports = {
         const respuesta = await connectiondb
                             .db(DATABASE)
                             .collection(LIBROS)
-                            .updateOne({_id: new objectId(libro._id)}, 
+                            .updateOne({id: parseInt(libro.id)}, 
                                         {$set: {nombre: libro.nombre, 
                                                 descripcion: libro.descripcion, 
                                                 categoria_id: libro.categoria_id,
                                                 persona_id: libro.persona_id,
                                                 autor: libro.autor,
                                                 rating: libro.rating
-                                            }});
+                                        }});
         return respuesta;
     },
     prestarLibro: async (datos) => {
@@ -87,7 +87,7 @@ module.exports = {
         const respuesta = await connectiondb
                             .db(DATABASE)
                             .collection(LIBROS)
-                            .updateOne({_id: new objectId(datos._id)}, 
+                            .updateOne({id: parseInt(datos.id)}, 
                                         {$set: {persona_id: datos.persona_id }});
         return respuesta;
     },
