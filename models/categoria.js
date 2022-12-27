@@ -26,6 +26,7 @@ module.exports = {
 					.db(DATABASE)
 					.collection(CATEGORIAS)
 					.findOne({id: id})
+
 		return respuesta;
 	},
 	listaCategorias: async () => {

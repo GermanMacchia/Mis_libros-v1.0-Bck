@@ -102,7 +102,7 @@ module.exports = {
 		const connectiondb = await conn.getConnection();
 		const respuesta = await connectiondb
                             .db(DATABASE)
-                            .collection(CATEGORIAS)
+                            .collection(LIBROS)
                             .deleteOne({id: id})
 		return respuesta;
     }

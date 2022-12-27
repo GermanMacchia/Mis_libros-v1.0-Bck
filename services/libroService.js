@@ -7,7 +7,8 @@ module.exports = {
         var respuesta = await libroModel.nombreLibro(libro.nombre);
         if (respuesta) {
             throw new Error('Ese libro ya existe')
-        }
+        }        
+
         respuesta = await categoriaModel.categoriaId(libro.categoria_id);
         if (respuesta == null) {
             throw new Error('No existe la categoria indicada')
@@ -19,7 +20,6 @@ module.exports = {
                 throw new Error('No existe la persona indicada')
             }
         }
-
 
         respuesta = await libroModel.nuevoLibro(libro);
         return respuesta;

@@ -4,14 +4,19 @@ const PERSONAS = 'personas';
 
 module.exports = {
 	mailPersona: async (email) => {
-		let respuesta = await conexion.query(
-			'SELECT * FROM personas WHERE email = ?', [email]);
-		return respuesta;
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(PERSONAS)
+					.findOne({email: email})
+		return respuesta;		
 	},
 	guardarPersona: async (persona) => {
-		let respuesta = await conexion.query(
-			'INSERT INTO personas (nombre, apellido, email, alias) VALUES (?,?,?,?)', 
-			[persona.nombre, persona.apellido, persona.email, persona.alias]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(PERSONAS)
+					.insertOne(persona);
 		return respuesta;
 	},
 	listaPersonas: async () => {
@@ -20,40 +25,54 @@ module.exports = {
 					.db(DATABASE)
 					.collection(PERSONAS)
 					.find()
-                    			.toArray()
-					
+                    			.toArray()				
 		return respuesta;
 	},
 	personaId: async (id) => {
-		let respuesta = await conexion.query(
-		'SELECT * FROM personas WHERE id = ?', [id]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(PERSONAS)
+					.findOne({id: id})
 		return respuesta;
 	},
 	verificacionDoble: async (persona) => {
-		let respuesta = await conexion.query(
-		'SELECT * FROM personas WHERE email = ? AND id= ?', 
-		[persona.email, persona.id_params]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(PERSONAS)
+					.find({email: persona.email, id: persona.id_params})				
 		return respuesta;
 	},
 	personaUpdate: async (persona) => {
-		let respuesta = await conexion.query(
-			'UPDATE personas SET nombre = ?, apellido = ?, alias = ? WHERE id = ?', 
-			[persona.nombre, persona.apellido, persona.alias, persona.id_params]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection(CATEGORIAS)
+					.updateOne({id: persona.id_params}, {$set: {nombre: persona.nombre, apellido: persona.apellido, alias: persona.alias }});
 		return respuesta;
 	},
 	librosPersona: async (id) => {
-		let respuesta = await conexion.query(
-			"SELECT * FROM libros WHERE persona_id = ?", [id]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+					.db(DATABASE)
+					.collection("libros")
+					.find({persona_id: id})
+					.toArray()
 		return respuesta;
 	},
 	borrarPersona: async (id) => {
-		let respuesta = await conexion.query(
-			"DELETE FROM personas WHERE id = ?", [id]);
+		const connectiondb = await conn.getConnection();
+		const respuesta = await connectiondb
+                            .db(DATABASE)
+                            .collection(PERSONAS)
+                            .deleteOne({id: id})
 		return respuesta;
 	},
+	/*
 	resetPersonas: async () => {
 	let respuesta = await conexion.query(
 		"ALTER TABLE personas AUTO_INCREMENT = 1");
 	return respuesta;
-	}
+	}*/
 }
